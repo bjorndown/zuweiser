@@ -1,8 +1,7 @@
-const Excel = require('exceljs');
+const {readExcel, getRowsAsObjects} = require('./reader');
 const _ = require('lodash');
 
 const {bla} = require('./model');
-const workbook = new Excel.Workbook();
 
 let students;
 let courses;
@@ -29,26 +28,6 @@ const config = {
         }
     }
 };
-
-function getRowsAsObjects(workbook, worksheetName) {
-    const worksheet = workbook.getWorksheet(worksheetName);
-    const header = worksheet.getRow(1).values.splice(1);
-
-    worksheet.columns = header.map(header =>  { 
-        return { header: header, key: header };
-    });
-
-    const objects = [];
-
-    workbook.getWorksheet(worksheetName).eachRow((row, rowNumber) => {
-        if (rowNumber > 1) {
-            const rowObj = _.zipObject(header, row.values.splice(1));
-            objects.push(rowObj);
-        }
-    });
-
-    return objects;
-}
 
 function readStudents(workbook) {
     students = getRowsAsObjects(workbook, config.student.worksheet);
@@ -111,7 +90,7 @@ function writeMatch(workbook) {
     });  
 }
 
-workbook.xlsx.readFile(config.filename)
+readExcel(config.filename)
     .then(readCourses)
     .then(readStudents)
     .then(match)
