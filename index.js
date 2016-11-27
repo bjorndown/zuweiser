@@ -13,9 +13,11 @@ const config = {
             id: 'id',
             name: 'Name',
             firstName: 'Vorname',
-            prio1: 'Prio 1',
-            prio2: 'Prio 2',
-            prio3: 'Prio 3'
+            priorities: [
+                { column: 'Prio 1' },
+                { column: 'Prio 2' },
+                { column: 'Prio 3' }
+            ]
         }
     },
     courses: { 
