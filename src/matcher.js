@@ -2,7 +2,7 @@ const {log} = require('./log')
 
 function match({ students, courses }) {
     students.forEach(student => {
-        for (unmatchedPriority of student.unmatchedPriorities()) {
+        for (let unmatchedPriority of student.unmatchedPriorities()) {
             tryToMatchFor(unmatchedPriority, student, courses)
         }
         if (student.matched !== true) {
