@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const {log} = require('./log')
 
 function mapRawToObjFields(rawObj, fields) {
     let obj = {}
@@ -46,21 +47,21 @@ class Course {
     }
 
     toString() {
-        return this.name;
+        return this.name
     }
 }
 
 class Student {
 
     constructor(studentData) {
-        this.studentData = studentData;
-        this.matched = false;
+        this.studentData = studentData
+        this.matched = false
     }
 
     *unmatchedPriorities() {
-        let index = 0;
+        let index = 0
         while (this.matched === false && index < this.studentData.priorities.length) {
-            console.log('Matching priority ' + index + ' for ' + this)
+            log.debug('Matching priority ' + index + ' for ' + this)
             yield this.studentData.priorities[index]
             index = index + 1
         }
@@ -71,5 +72,5 @@ class Student {
     }
 }
 
-exports.convertStudent = convertStudent;
-exports.convertCourse = convertCourse;
+exports.convertStudent = convertStudent
+exports.convertCourse = convertCourse
