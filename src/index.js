@@ -4,7 +4,7 @@ const {writeMatch} = require('./writer')
 const {convertStudent, convertCourse} = require('./model')
 
 const config = {
-    filename: './projektwoche.xlsx',
+    filename: './example/projektwoche.xlsx',
     student: {
         worksheet: 'Schüler',
         fields: {
