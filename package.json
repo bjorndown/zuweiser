@@ -9,16 +9,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "exceljs": "^0.2.36",
-    "fast-csv": "^2.3.0",
-    "lodash": "^4.17.0",
-    "log4js": "^1.0.1",
-    "winston": "^2.3.0"
+    "exceljs": "0.2.36",
+    "lodash": "4.17.0",
+    "log4js": "1.0.1",
+    "winston": "2.3.0"
   },
   "devDependencies": {
-    "eslint": "^3.10.1",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.4.0",
-    "eslint-plugin-standard": "^2.0.1"
+    "eslint": "3.10.1",
+    "eslint-config-standard": "6.2.1",
+    "eslint-plugin-promise": "3.4.0",
+    "eslint-plugin-standard": "2.0.1"
   }
 }
