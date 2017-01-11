@@ -58,13 +58,12 @@ class Student {
         this.matched = false
     }
 
-    *unmatchedPriorities() {
-        let index = 0
-        while (this.matched === false && index < this.studentData.priorities.length) {
-            log.debug('Matching priority ' + index + ' for ' + this)
-            yield this.studentData.priorities[index]
-            index = index + 1
-        }
+    get id() {
+        return this.studentData.id
+    }
+
+    get priorities() {
+        return this.studentData.priorities
     }
 
     toString() {
@@ -74,3 +73,5 @@ class Student {
 
 exports.convertStudent = convertStudent
 exports.convertCourse = convertCourse
+exports.Student = Student
+exports.Course = Course
