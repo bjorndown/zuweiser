@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Zuweiser</title>
+</head>
+
+<body>
+    <div id="app">
+        <am-error-banner :error="error"></am-error-banner>
+
+        <am-excel-reader @excel-overview-loaded="onOverviewLoaded"></am-excel-reader>
+
+        <h2>Blaetter &amp; Spalten auswaehlen</h2>
+        
+        <am-activities-sheet-config :excel-overview="excelOverview"></am-activities-sheet-config>
+        <am-participants-sheet-config :excel-overview="excelOverview"></am-participants-sheet-config>
+        
+    </div>
+
+    <script src="../../node_modules/nw-dev/lib/dev.js"></script>
+    <script src="../../node_modules/vue/dist/vue.js"></script>
+    <script src="./index.js"></script>
+    <!--<script>require('./index')</script>-->
+</body>
+
+
+
+</html>

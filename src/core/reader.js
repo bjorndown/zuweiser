@@ -20,12 +20,12 @@ function readHeaderColumns(worksheet) {
         log.warn('Ignoring first value in every row since it was empty in header row.')
         skipFirstValueInRowMode = true
     }
-    
-    return skipFirstValueInRowMode ? firstRow.splice(1) : firstRow 
+
+    return skipFirstValueInRowMode ? firstRow.splice(1) : firstRow
 }
 
 function writeHeaderColumnsToWorksheet(worksheet, headerColumns) {
-    worksheet.columns = headerColumns.map(header =>  {
+    worksheet.columns = headerColumns.map(header => {
         return { header: header, key: header }
     })
 }
@@ -46,5 +46,20 @@ function readExcel(filename) {
     return workbook.xlsx.readFile(filename)
 }
 
+function getOverview(workbook) {
+    let excelOverview = {}
+
+    workbook.eachSheet(sheet => {
+        let firstRow = sheet.getRow(1)
+        let headers = [1, 2, 3, 4, 5, 6, 7]
+            .map(col => firstRow.getCell(col).value)
+            .filter(header => !!header)
+
+        excelOverview[sheet.name] = headers
+    })
+    return excelOverview
+}
+
 exports.getRowsAsObjects = getRowsAsObjects
 exports.readExcel = readExcel
+exports.getOverview = getOverview
