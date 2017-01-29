@@ -48,7 +48,7 @@ function readExcel(filename) {
 
 function getOverview(workbook) {
     let excelOverview = {}
-
+    // TODO make niceer
     workbook.eachSheet(sheet => {
         let firstRow = sheet.getRow(1)
         let headers = [1, 2, 3, 4, 5, 6, 7]

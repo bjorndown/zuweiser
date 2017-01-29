@@ -1,25 +1,23 @@
 // TODO why does the next line break things?
 // const Vue = require('vue')
 /* globals Vue */
-const {readExcel, getOverview} = require('../core/reader')
+const {readExcel, getOverview, readCourses, readStudents, match} = require('../core/index')
 
 const excelReader = {
-    props: {
-        //     filename: '',
-        //     availableColumns: []
-    },
     template: `<div>
-        <h2>1. Datei angeben</h2>
+        <h2>Datei angeben</h2>
         <label for="file"></label>
-        <input type="file" id="file">
-        <button @click="loadExcel()">Laden</button>
+        <input type="file" @change="loadExcel($event.target.value)" id="file">
         <slot></slot>
         </div>`,
+    data: function() {
+        return {
+            filename: ''
+        }
+    },
     methods: {
-        loadExcel: function () {
+        loadExcel: function (filename) {
             error = {}
-            // TODO remove next line
-            const filename = document.getElementById('file').value
             readExcel(filename)
                 .then(getOverview)
                 .then(sheets => this.$emit('excel-overview-loaded', sheets))
@@ -28,17 +26,15 @@ const excelReader = {
     }
 }
 
-const errorBanner = {
-    props: ['error'],
-    template: '<p style="color: red">{{ error.message }}</p>'
-}
-
 const multiselect = {
-    props: ['config-item', 'values', 'value'],
-    template: `<select @input="onSelected">
+    props: ['config-item', 'values', 'value', 'label'],
+    template: `<div>
+        <label>{{label}}</label>
+        <select @input="onSelected">
         <option>Bitte auswaehlen</option>
         <option v-for="selectableValue in values">{{selectableValue}}</option>
-        </select>`,
+        </select>
+        </div>`,
     methods: {
         onSelected: function (event) {
             this.$emit('input', event.target.value)
@@ -55,17 +51,34 @@ const activitiesSheetConfig = {
             activitiesConfig: {
                 worksheet: '',
                 fields: {
-                    limit: '',
                     id: '',
+                    limit: '',
                     name: ''
                 }
             },
+            labels: {
+                worksheet: 'Arbeitsblatt',
+                id: 'ID',
+                limit: 'Teilnehmerlimite',
+                name: 'Kursname'
+            }
         }
     },
     template: `<div>
         <h3>Aktivitaeten</h3>
-        <am-multiselect v-model="activitiesConfig.worksheet" :values="Object.keys(excelOverview)"></am-multiselect>
-        <am-multiselect v-for="(field, key) in activitiesConfig.fields" v-model="activitiesConfig.fields[key]" :values="excelOverview[activitiesConfig.worksheet]"></am-multiselect>
+        <h4>Arbeitsblatt</h4>
+        <am-multiselect 
+            v-model="activitiesConfig.worksheet" 
+            :values="Object.keys(excelOverview)">
+        </am-multiselect>
+        <h4>Spalten</h4>
+        <am-multiselect 
+            v-if="activitiesConfig.worksheet"
+            v-for="(field, key) in activitiesConfig.fields" 
+            v-model="activitiesConfig.fields[key]" 
+            :values="excelOverview[activitiesConfig.worksheet]"
+            :label="labels[key]">
+        </am-multiselect>
         </div>`
 }
 
@@ -76,32 +89,91 @@ const participantSheetConfig = {
             participantsConfig: {
                 worksheet: '',
                 fields: {
+                    id: '',
                     name: '',
-                    firstName: ''
+                    firstName: '',
+                    priority1: '',
+                    priority2: '',
+                    priority3: '',
+                    // priority4: ''
                 }
+
+            },
+            labels: {
+                worksheet: 'Arbeitsblatt',
+                id: 'ID',
+                name: 'Name',
+                firstName: 'Vorname',
+                priority1: '1. Prioritaet',
+                priority2: '2. Prioritaet',
+                priority3: '3. Prioritaet',
+                // priority4: '4. Prioritaet'
             }
         }
     },
     template: `<div>
         <h3>Teilnehmer</h3>
-        <am-multiselect v-model="participantsConfig.worksheet" :values="Object.keys(excelOverview)"></am-multiselect>
-        <am-multiselect v-for="(field, key) in participantsConfig.fields" v-model="participantsConfig.fields[key]" :values="excelOverview[participantsConfig.worksheet]"></am-multiselect>
+        <h4>Arbeitsblatt</h4>
+        <am-multiselect 
+            v-model="participantsConfig.worksheet" 
+            :values="Object.keys(excelOverview)">
+        </am-multiselect>
+        <h4>Spalten</h4>
+        <am-multiselect
+            v-if="participantsConfig.worksheet" 
+            v-for="(field, key) in participantsConfig.fields" 
+            v-model="participantsConfig.fields[key]" 
+            :values="excelOverview[participantsConfig.worksheet]"
+            :label="labels[key]">
+        </am-multiselect>
         </div>`
 }
 // TODO do it right
 let error = { message: '' }
 
+const matcher = {
+    props: {
+        config: {}
+    },
+    template: `<div>
+        <p style="color: red">{{error}}</p>
+        <button @click="matchAndWrite">do it</button>
+        {{result}}
+    </div>`,
+    data: function() {
+        return {
+            result: {},
+            error: null
+        }
+    },
+    methods: {
+        matchAndWrite: function() {
+            readExcel(this.config.filename)
+                .then(readStudents)
+                .then(readCourses)
+                .then(match)
+                .then(function(result) {
+                    this.result = result
+                })
+                .catch(function(error) { 
+                    this.error = error
+                })
+        }
+    }
+}
+
 new Vue({
     el: '#app',
     data: {
         error,
-        excelOverview: {}
+        excelOverview: null,
+        matchConfig: null
     },
     components: {
-        'am-error-banner': errorBanner,
         'am-excel-reader': excelReader,
         'am-activities-sheet-config': activitiesSheetConfig,
         'am-participants-sheet-config': participantSheetConfig,
+        'am-do-matching': matcher
     },
     methods: {
         onOverviewLoaded: function (excelOverview) {
