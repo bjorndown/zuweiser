@@ -7,16 +7,29 @@
 
 <body>
     <div id="app">
-        <am-excel-reader @excel-overview-loaded="onOverviewLoaded"></am-excel-reader>
+        <am-excel-reader 
+            @excel-overview-loaded="onOverviewLoaded">
+        </am-excel-reader>
 
         <div v-if="excelOverview">
             <h2>Blaetter &amp; Spalten auswaehlen</h2>
 
-            <am-activities-sheet-config :excel-overview="excelOverview"></am-activities-sheet-config>
-            <am-participants-sheet-config :excel-overview="excelOverview"></am-participants-sheet-config>
+            <am-activities-sheet-config 
+                @completed="activitiesConfigCompleted"    
+                :excel-overview="excelOverview">
+            </am-activities-sheet-config>
+
+            <am-participants-sheet-config 
+                @completed="participantsConfigCompleted"
+                :excel-overview="excelOverview">
+            </am-participants-sheet-config>
         </div>
+        {{matchConfig}}
         
-        <am-do-matching v-if="matchConfig && matchConfig.participantsConfig && matchConfig.activitiesConfig" :config="matchConfig"></am-do-matching>
+        <am-do-matching 
+            v-if="matchConfig.participants && matchConfig.activities"
+            :config="matchConfig">
+        </am-do-matching>
     </div>
 
     <script src="../../node_modules/nw-dev/lib/dev.js"></script>
