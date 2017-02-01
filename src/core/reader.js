@@ -57,7 +57,7 @@ function getOverview(workbook) {
 
         excelOverview[sheet.name] = headers
     })
-    return excelOverview
+    return { sheets: excelOverview }
 }
 
 exports.getRowsAsObjects = getRowsAsObjects

@@ -24,11 +24,8 @@
                 :excel-overview="excelOverview">
             </am-participants-sheet-config>
         </div>
-        {{matchConfig}}
         
-        <am-do-matching 
-            v-if="matchConfig.participants && matchConfig.activities"
-            :config="matchConfig">
+        <am-do-matching :config="matchConfig">
         </am-do-matching>
     </div>
 

@@ -13,7 +13,7 @@ new Vue({
     el: '#app',
     data: {
         excelOverview: null,
-        matchConfig: { activities: {}, participants: {} }
+        matchConfig: { filename: '', courses: {}, student: {} }
     },
     components: {
         'am-excel-reader': excelReader,
@@ -24,12 +24,13 @@ new Vue({
     methods: {
         onOverviewLoaded: function (excelOverview) {
             this.excelOverview = excelOverview
+            this.matchConfig.filename = excelOverview.filename
         },
         activitiesConfigCompleted: function(activitiesSheetConfig) {
-            this.matchConfig.activities = activitiesSheetConfig
+            this.matchConfig.courses = activitiesSheetConfig
         },
         participantsConfigCompleted: function(participantSheetConfig) {
-            this.matchConfig.participants = participantSheetConfig
+            this.matchConfig.student = participantSheetConfig
         }
     }
 })

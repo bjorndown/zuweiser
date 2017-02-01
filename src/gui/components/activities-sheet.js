@@ -21,11 +21,10 @@ exports.activitiesSheetConfig = {
     template: `<div>
         <h3>Aktivitaeten</h3>
         <h4>Arbeitsblatt</h4>
-        {{activitiesConfig}}
         <am-multiselect 
             v-model="activitiesConfig.worksheet" 
             @input="onChange"
-            :values="Object.keys(excelOverview)">
+            :values="Object.keys(excelOverview.sheets)">
         </am-multiselect>
         <h4>Spalten</h4>
         <am-multiselect 
@@ -33,7 +32,7 @@ exports.activitiesSheetConfig = {
             v-for="(field, key) in activitiesConfig.fields" 
             v-model="activitiesConfig.fields[key]" 
             @input="onChange"
-            :values="excelOverview[activitiesConfig.worksheet]"
+            :values="excelOverview.sheets[activitiesConfig.worksheet]"
             :label="labels[key]">
         </am-multiselect>
         </div>`,

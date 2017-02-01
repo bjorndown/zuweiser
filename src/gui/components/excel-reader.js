@@ -14,11 +14,15 @@ exports.excelReader = {
     },
     methods: {
         loadExcel: function (filename) {
-            error = {}
             readExcel(filename)
                 .then(getOverview)
-                .then(sheets => this.$emit('excel-overview-loaded', sheets))
-                .catch(e => error.message = e.toString())
+                .then(overview => {
+                    // TODO maybe do this in getOverview?! 
+                    overview.filename = filename
+                    return overview
+                })
+                .then(overview => this.$emit('excel-overview-loaded', overview))
+                .catch(e => this.error.message = e.toString())
         }
     }
 }
