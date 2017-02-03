@@ -25,14 +25,20 @@
             </am-participants-sheet-config>
         </div>
         
-        <am-do-matching :config="matchConfig">
+        <am-do-matching :config="matchConfig" @matched="onMatched">
         </am-do-matching>
+        <ul>
+            <li v-for="course in result.courses">
+                {{course.name}}
+                <ul>
+                    <li v-for="student in course.students">{{student.toString()}}</li>
+                </ul>
+            </li>
+        </ul>
     </div>
 
-    <script src="../../node_modules/nw-dev/lib/dev.js"></script>
     <script src="../../node_modules/vue/dist/vue.js"></script>
-    <script src="./index.js"></script>
-    <!--<script>require('./index')</script>-->
+    <script>require('./index')</script>
 </body>
 
 

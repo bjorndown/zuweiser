@@ -13,7 +13,8 @@ new Vue({
     el: '#app',
     data: {
         excelOverview: null,
-        matchConfig: { filename: '', courses: {}, student: {} }
+        matchConfig: { filename: '', courses: {}, student: {} },
+        result: {}
     },
     components: {
         'am-excel-reader': excelReader,
@@ -31,6 +32,9 @@ new Vue({
         },
         participantsConfigCompleted: function(participantSheetConfig) {
             this.matchConfig.student = participantSheetConfig
+        },
+        onMatched: function(result) {
+            this.result = result
         }
     }
 })

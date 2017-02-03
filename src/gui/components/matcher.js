@@ -1,17 +1,15 @@
 const {readExcel, readCourses, readStudents, match} = require('../../core/index')
+const {log} = require('../../core/log')
 
 exports.matcher = {
     props: ['config'],
     template: `<div>
-        Config: {{config}}
         <p style="color: red">{{error.w}}</p>
-        <button v-if="config.student && config.courses" @click="matchAndWrite">do it</button>
-        Result: {{result}}
+        <button v-if="config.student && config.courses" @click="matchAndWrite">Prioritaeten aufloesen</button>
     </div>`,
     data: function() {
         return {
-            result: {},
-            error: {},
+            error: {}
         }
     },
     methods: {
@@ -21,11 +19,10 @@ exports.matcher = {
                 .then(readCourses)
                 .then(readStudents)
                 .then(match)
-                .then(function(result) {
-                    console.dir(result)
-                    this.result = result
+                .then(result => {
+                    this.$emit('matched', result)
                 })
-                .catch(function(error) { 
+                .catch(error => { 
                     this.error = error
                 })
         }

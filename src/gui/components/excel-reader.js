@@ -4,16 +4,20 @@ exports.excelReader = {
     template: `<div>
         <h2>Datei angeben</h2>
         <label for="file"></label>
-        <input type="file" @change="loadExcel($event.target.value)" id="file">
+        <input type="file" @change="loadExcel()" id="file">
         <slot></slot>
         </div>`,
     data: function() {
         return {
-            filename: ''
+            filename: '',
+            error: { message: ''}
         }
     },
     methods: {
-        loadExcel: function (filename) {
+        loadExcel: function () {
+            // TODO solve this differently? electron puts the paths there..
+            let filename = document.getElementById('file').files[0].path
+
             readExcel(filename)
                 .then(getOverview)
                 .then(overview => {

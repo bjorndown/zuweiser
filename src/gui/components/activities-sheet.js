@@ -6,15 +6,15 @@ exports.activitiesSheetConfig = {
                 worksheet: '',
                 fields: {
                     id: '',
-                    limit: '',
-                    name: ''
+                    name: '',
+                    limit: ''
                 }
             },
             labels: {
                 worksheet: 'Arbeitsblatt',
                 id: 'ID',
-                limit: 'Teilnehmerlimite',
-                name: 'Kursname'
+                name: 'Kursname',
+                limit: 'Teilnehmerlimite'
             }
         }
     },

@@ -2,7 +2,7 @@
   "name": "activity-matcher",
   "version": "0.0.1",
   "description": "",
-  "main": "src/gui/index.html",
+  "main": "src/main.js",
   "scripts": {
     "test": "mocha"
   },
@@ -13,7 +13,8 @@
     "lodash": "4.17.0",
     "log4js": "1.0.1",
     "vue": "2.1.8",
-    "winston": "2.3.0"
+    "winston": "2.3.0",
+    "electron": "1.4.15"
   },
   "devDependencies": {
     "eslint": "3.10.1",
