@@ -1,9 +1,9 @@
-/* globals describe, it */
+/* globals describe, it, xit */
 const assert = require('assert')
 const expect = require('expect.js')
 
-const {match} = require('../src/matcher')
-const {Student, Course} = require('../src/model')
+const {match} = require('../src/core/matcher')
+const {Student, Course} = require('../src/core/model')
 
 function hasExactParticipants(activity, ...students) {
     assert.equal(activity.students.length, students.length)
@@ -92,6 +92,14 @@ describe('matcher module', () => {
             expect(match)
             .withArgs({ students: [student1], courses: [course1] })
             .to.throwException(/Choices not unique/)
+        })
+
+        xit('should mark students as unmatched if none of their priorities could be met', () => {
+
+        })
+
+        xit('should add students to waiting list if course is full', () => {
+            
         })
     })
 })
