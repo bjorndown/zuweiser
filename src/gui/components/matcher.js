@@ -20,7 +20,7 @@ exports.matcher = {
                 .then(readCourses)
                 .then(readStudents)
                 .then(match)
-                .then(writeMatchesToExcelWorksheet)
+                .then(result => this.$emit('matched', result))
                 .catch(error => { 
                     this.error = error
                 })

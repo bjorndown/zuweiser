@@ -66,6 +66,18 @@ class Student {
         return this.studentData.priorities
     }
 
+    get name() {
+        return this.studentData.name
+    }
+
+    get firstName() {
+        return this.studentData.firstName
+    }
+
+    get class() {
+        return this.studentData.class
+    }
+
     toString() {
         return this.studentData.firstName + ' ' + this.studentData.name
     }

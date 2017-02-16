@@ -27,12 +27,20 @@
         
         <am-do-matching :config="matchConfig" @matched="onMatched">
         </am-do-matching>
+
+        <h2>Resultat</h2>
         <ul>
             <li v-for="course in result.courses">
-                {{course.name}}
-                <ul>
-                    <li v-for="student in course.students">{{student.toString()}}</li>
-                </ul>
+                <h3>{{course.name}}</h3>
+                <table>
+                    <tbody>
+                        <tr v-for="student in course.students">
+                            <td>{{student.firstName}}</td>
+                            <td>{{student.name}}</td>
+                            <td>{{student.class}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </li>
         </ul>
     </div>

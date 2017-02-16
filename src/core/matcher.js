@@ -1,7 +1,5 @@
 const _ = require('lodash')
 
-const {log} = require('./log')
-
 function match({ students, courses }) {
     assertActivityIdsAreUnique(courses)
     assertParticipantsIdsAreUnique(students) 
@@ -19,7 +17,6 @@ function match({ students, courses }) {
             if (course.students.length < course.limit && !student.matched) {
                 course.students.push(student)
                 student.matched = true
-                log.debug(student + ' kommt in Kurs "' + course + '"')
             } else {
                 course.waitingList.push(student)
             }
@@ -27,8 +24,8 @@ function match({ students, courses }) {
 
         currentPriorityIndex = currentPriorityIndex + 1
     }
-
-    return {students, courses}
+    
+    return { students, courses }
 }
 
 function assertParticipantsIdsAreUnique(students) {
