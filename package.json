@@ -4,12 +4,13 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "run": "node_modules/.bin/electron ."
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "exceljs": "0.2.36",
+    "exceljs": "0.2.43",
     "lodash": "4.17.0",
     "log4js": "1.0.1",
     "vue": "2.1.8",
