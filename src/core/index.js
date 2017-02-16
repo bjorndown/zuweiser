@@ -1,6 +1,6 @@
 const {readExcel, getRowsAsObjects, getOverview} = require('./reader')
 const {match} = require('./matcher')
-const {writeMatch} = require('./writer')
+const {writeMatchesToExcelWorksheet} = require('./writer')
 const {convertStudent, convertCourse} = require('./model')
 
 function readCourses({ workbook, config }) {
@@ -19,5 +19,5 @@ exports.readExcel = readExcel
 exports.readCourses = readCourses
 exports.readStudents = readStudents
 exports.match = match
-exports.writeMatch = writeMatch
+exports.writeMatchesToExcelWorksheet = writeMatchesToExcelWorksheet
 exports.getOverview = getOverview

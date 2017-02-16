@@ -38,7 +38,12 @@ function readRows(worksheet, headerColumns) {
             const rowObj = _.zipObject(headerColumns, values)
             rowObjects.push(rowObj)
         }
+        // hidden is set to true for some reason, we need to force it to false 
+        // otherwise previously existing rows will be hidden if workbook is
+        // written back to filesystem
+        row.hidden = false
     })
+
     return rowObjects
 }
 

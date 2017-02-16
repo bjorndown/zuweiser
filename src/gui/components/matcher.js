@@ -1,10 +1,9 @@
-const {readExcel, readCourses, readStudents, match} = require('../../core/index')
-const {log} = require('../../core/log')
+const {readExcel, readCourses, readStudents, match, writeMatchesToExcelWorksheet} = require('../../core/index')
 
 exports.matcher = {
     props: ['config'],
     template: `<div>
-        <p style="color: red">{{error.w}}</p>
+        <p style="color: red">{{error.message}}</p>
         <button v-if="config.student && config.courses" @click="matchAndWrite">Prioritaeten aufloesen</button>
     </div>`,
     data: function() {
@@ -14,14 +13,14 @@ exports.matcher = {
     },
     methods: {
         matchAndWrite: function() {
+            this.error = {}
+
             readExcel(this.config.filename)
                 .then(workbook => { return { workbook: workbook, config: this.config } })
                 .then(readCourses)
                 .then(readStudents)
                 .then(match)
-                .then(result => {
-                    this.$emit('matched', result)
-                })
+                .then(writeMatchesToExcelWorksheet)
                 .catch(error => { 
                     this.error = error
                 })
