@@ -1,23 +1,17 @@
-const {readExcel, getRowsAsObjects, getOverview} = require('./reader')
-const {match} = require('./matcher')
-const {writeMatchesToExcelWorksheet} = require('./writer')
-const {convertStudent, convertCourse} = require('./model')
+import {getRowsAsObjects} from './reader'
+import {convertStudent, convertCourse} from './model'
 
-function readCourses({ workbook, config }) {
+export {match} from './matcher'
+export {readExcel, getOverview} from './reader'
+
+export function readCourses({ workbook, config }) {
     let rawCourses = getRowsAsObjects(workbook, config.courses.worksheet)
     let courses = rawCourses.map(rawCourse => convertCourse(rawCourse, config.courses.fields))
     return { courses, workbook, config }
 }
 
-function readStudents({ workbook, courses, config }) {
+export function readStudents({ workbook, courses, config }) {
     let rawStudents = getRowsAsObjects(workbook, config.student.worksheet)
     let students = rawStudents.map(rawStudent => convertStudent(rawStudent, config.student.fields))
     return { workbook, students, courses, config }
 }
-
-exports.readExcel = readExcel
-exports.readCourses = readCourses
-exports.readStudents = readStudents
-exports.match = match
-exports.writeMatchesToExcelWorksheet = writeMatchesToExcelWorksheet
-exports.getOverview = getOverview

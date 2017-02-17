@@ -1,31 +1,4 @@
-const _ = require('lodash')
-const {log} = require('./log')
-
-function mapRawToObjFields(rawObj, fields) {
-    let obj = {}
-    // TODO clean up
-    _.forOwn(fields, (value, key) => {
-        if (_.isString(value)) {
-            obj[key] = rawObj[value]
-        } else if (_.isArray(value)) {
-            obj[key] = []
-            _.forOwn(value, (value2, key2) => {
-                obj[key].push(rawObj[value2.column])
-            })
-        }
-    })
-    return obj
-}
-
-function convertStudent(rawStudent, studentFields) {
-    let studentData = mapRawToObjFields(rawStudent, studentFields)
-    return new Student(studentData)
-}
-
-function convertCourse(rawCourse, courseFields) {
-    let courseData = mapRawToObjFields(rawCourse, courseFields)
-    return new Course(courseData)
-}
+import * as _ from 'lodash'
 
 class Course {
     constructor(courseData) {
@@ -83,7 +56,28 @@ class Student {
     }
 }
 
-exports.convertStudent = convertStudent
-exports.convertCourse = convertCourse
-exports.Student = Student
-exports.Course = Course
+export function mapRawToObjFields(rawObj, fields) {
+    let obj = {}
+    // TODO clean up
+    _.forOwn(fields, (value, key) => {
+        if (_.isString(value)) {
+            obj[key] = rawObj[value]
+        } else if (_.isArray(value)) {
+            obj[key] = []
+            _.forOwn(value, (value2, key2) => {
+                obj[key].push(rawObj[value2.column])
+            })
+        }
+    })
+    return obj
+}
+
+export function convertStudent(rawStudent, studentFields) {
+    let studentData = mapRawToObjFields(rawStudent, studentFields)
+    return new Student(studentData)
+}
+
+export function convertCourse(rawCourse, courseFields) {
+    let courseData = mapRawToObjFields(rawCourse, courseFields)
+    return new Course(courseData)
+}

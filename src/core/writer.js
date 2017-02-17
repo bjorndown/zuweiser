@@ -1,5 +1,5 @@
 /* eslint no-console: "off" */
-function writeMatch({ courses }) {
+export function writeMatch({ courses }) {
     console.log('\n\n---- Auswertung\n')
     courses.forEach(course => {
         console.log('-- ' + course.name)
@@ -7,5 +7,3 @@ function writeMatch({ courses }) {
         console.log('\n')
     })
 }
-
-exports.writeMatch = writeMatch

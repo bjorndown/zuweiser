@@ -1,4 +1,4 @@
-exports.activitiesSheetConfig = {
+export var activitiesSheetConfig = {
     props: ['excelOverview'],
     data: function () {
         return {

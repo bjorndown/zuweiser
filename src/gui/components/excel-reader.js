@@ -1,10 +1,10 @@
-const {readExcel, getOverview} = require('../../core/index')
+var {readExcel, getOverview} = require('../../core/index')
 
-exports.excelReader = {
+export var excelReader = {
     template: `<div>
         <h2>Datei angeben</h2>
         <label for="file"></label>
-        <input type="file" @change="loadExcel()" id="file">
+        <input type="file" @change="loadExcel" id="file">
         <slot></slot>
         </div>`,
     data: function() {
@@ -14,15 +14,15 @@ exports.excelReader = {
         }
     },
     methods: {
-        loadExcel: function () {
-            // TODO solve this differently? electron puts the paths there..
-            let filename = document.getElementById('file').files[0].path
+        loadExcel: function (e) {
+            let fileBlob = e.target.files[0]
 
-            readExcel(filename)
+            readExcel(fileBlob)
                 .then(getOverview)
                 .then(overview => {
                     // TODO maybe do this in getOverview?! 
-                    overview.filename = filename
+                    // TODO rename, since its a blob
+                    overview.filename = fileBlob
                     return overview
                 })
                 .then(overview => this.$emit('excel-overview-loaded', overview))

@@ -1,6 +1,6 @@
-const _ = require('lodash')
+import * as _ from 'lodash'
 
-function match({ students, courses }) {
+export function match({ students, courses }) {
     assertActivityIdsAreUnique(courses)
     assertParticipantsIdsAreUnique(students) 
     assertChosenActivitiesDoExist(students, courses)
@@ -70,5 +70,3 @@ function assertChosenActivitiesDoExist(students, courses) {
         })
     })
 }
-
-exports.match = match

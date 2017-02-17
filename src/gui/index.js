@@ -1,11 +1,9 @@
-// TODO why does the next line break things?
-// const Vue = require('vue')
-/* globals Vue */
-const {activitiesSheetConfig} = require('./components/activities-sheet')
-const {excelReader} = require('./components/excel-reader')
-const {participantSheetConfig} = require('./components/participants-sheet')
-const {matcher} = require('./components/matcher')
-const {multiselect} = require('./components/multiselect')
+import Vue from 'vue'
+import {activitiesSheetConfig} from './components/activities-sheet'
+import {excelReader} from './components/excel-reader'
+import {participantSheetConfig} from './components/participants-sheet'
+import {matcher} from './components/matcher'
+import {multiselect} from './components/multiselect'
 
 Vue.component('am-multiselect', multiselect)
 

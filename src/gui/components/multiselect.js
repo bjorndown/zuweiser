@@ -1,4 +1,4 @@
-exports.multiselect = {
+export var multiselect = {
     props: ['config-item', 'values', 'value', 'label'],
     template: `<div>
         <label>{{label}}</label>

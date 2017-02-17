@@ -1,6 +1,6 @@
-const _ = require('lodash')
+import * as _ from 'lodash'
 
-exports.participantSheetConfig = {
+export var participantSheetConfig = {
     props: ['excelOverview'],
     data: function () {
         return {

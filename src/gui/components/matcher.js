@@ -1,6 +1,6 @@
-const {readExcel, readCourses, readStudents, match, writeMatchesToExcelWorksheet} = require('../../core/index')
+import {readExcel, readCourses, readStudents, match} from '../../core/index'
 
-exports.matcher = {
+export var matcher = {
     props: ['config'],
     template: `<div>
         <p style="color: red">{{error.message}}</p>
