@@ -1,6 +1,6 @@
-#!/usr/bin/env
+#!/usr/bin/env sh
 yarn
-webpack -p
+yarn build
 rm -rf tmp
 mkdir tmp
 cp -r --parents dist node_modules/xlsx/dist/xlsx.full.min.js tmp
