@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import {activitiesSheetConfig} from './components/activities-sheet'
-import {excelReader} from './components/excel-reader'
-import {participantSheetConfig} from './components/participants-sheet'
-import {matcher} from './components/matcher'
-import {multiselect} from './components/multiselect'
+import {activitiesSheetConfig} from './components/activities-sheet.vue'
+import {excelReader} from './components/excel-reader.vue'
+import {participantSheetConfig} from './components/participants-sheet.vue'
+import {matcher} from './components/matcher.vue'
+import {multiselect} from './components/multiselect.vue'
 
 Vue.component('am-multiselect', multiselect)
 

@@ -15,6 +15,10 @@ module.exports = {
       query: {
         presets: [['es2015']],
       }
+    },
+    {
+      test: /\.vue$/,
+      loader: 'vue-loader'
     }]
   },
   resolve: {
@@ -22,7 +26,7 @@ module.exports = {
 
     extensions: ['.js'],
     alias: {
-      'vue': 'vue/dist/vue.common.js'
+      vue: 'vue/dist/vue.common.js'
     }
   },
   devtool: 'cheap-eval-source-map'
