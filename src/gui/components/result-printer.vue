@@ -13,6 +13,16 @@
                         </tr>
                     </tbody>
                 </table>
+                <h4>Warteliste</h4>
+                <table>
+                    <tbody>
+                        <tr v-for="student in course.waitingList">
+                            <td>{{student.firstName}}</td>
+                            <td>{{student.name}}</td>
+                            <td>{{student.class}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </li>
         </ul>
     </div>
@@ -20,11 +30,7 @@
 
 <script>
 export default {
-    data() {
-        return {
-            result: { courses: [] }
-        }
-    }
+    props: ['result']
 }
 
 </script>

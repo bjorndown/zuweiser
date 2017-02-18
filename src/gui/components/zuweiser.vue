@@ -36,8 +36,8 @@
         data() {
             return {
                 excelOverview: null,
-                matchConfig: { filename: '', courses: [], student: [] },
-                result: {}
+                matchConfig: { filename: null, courses: null, student: null },
+                result: { courses: null }
             }
         },
         components: {

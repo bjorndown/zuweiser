@@ -9,10 +9,10 @@
     import { readExcel, readCourses, readStudents, match } from '../../core/index'
 
     export default {
+        props: ['config'],
         data() {
             return {
                 error: {},
-                config: {}
             }
         },
         methods: {
