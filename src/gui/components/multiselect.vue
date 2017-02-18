@@ -9,10 +9,10 @@
 </template>
 
 <script>
-    export var multiselect = {
+    export default {
         props: ['config-item', 'values', 'value', 'label'],
         methods: {
-            onSelected: function (event) {
+            onSelected(event) {
                 this.$emit('input', event.target.value)
             }
         }

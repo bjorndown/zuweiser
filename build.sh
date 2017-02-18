@@ -3,7 +3,6 @@ yarn
 yarn build
 rm -rf tmp
 mkdir tmp
-cp -r --parents dist node_modules/xlsx/dist/xlsx.full.min.js tmp
-sed 's/\.\.\/\.\.\///' src/gui/index.html > tmp/index.html # yeah
+cp -r --parents dist node_modules/xlsx/dist/xlsx.full.min.js index.html tmp
 ls tmp
 sudo docker build -t zuweiser .

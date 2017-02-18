@@ -6,18 +6,19 @@
         <slot></slot>
     </div>
 </template>
+
 <script>
     import { readExcel, getOverview } from '../../core/index'
 
-    export var excelReader = {
-        data: function () {
+    export default {
+        data() {
             return {
                 filename: '',
                 error: { message: '' }
             }
         },
         methods: {
-            loadExcel: function (e) {
+            loadExcel(e) {
                 let fileBlob = e.target.files[0]
 
                 readExcel(fileBlob)

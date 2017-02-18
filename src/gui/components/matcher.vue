@@ -8,15 +8,15 @@
 <script>
     import { readExcel, readCourses, readStudents, match } from '../../core/index'
 
-    export var matcher = {
-        props: ['config'],
-        data: function () {
+    export default {
+        data() {
             return {
-                error: {}
+                error: {},
+                config: {}
             }
         },
         methods: {
-            matchAndWrite: function () {
+            matchAndWrite() {
                 this.error = {}
 
                 readExcel(this.config.filename)

@@ -12,9 +12,9 @@
 </template>
 
 <script>
-    export var activitiesSheetConfig = {
+    export default {
         props: ['excelOverview'],
-        data: function () {
+        data() {
             return {
                 activitiesConfig: {
                     worksheet: '',
@@ -33,7 +33,7 @@
             }
         },
         methods: {
-            onChange: function () {
+            onChange() {
                 if (this.activitiesConfig.worksheet) {
                     this.$emit('completed', this.activitiesConfig)
                 }

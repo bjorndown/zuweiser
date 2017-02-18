@@ -20,9 +20,9 @@
 <script>
     import * as _ from 'lodash'
 
-    export var participantSheetConfig = {
+    export default {
         props: ['excelOverview'],
-        data: function () {
+        data() {
             return {
                 participantsConfig: {
                     worksheet: '',
@@ -46,13 +46,13 @@
             }
         },
         methods: {
-            onChange: function () {
+            onChange() {
                 if (this.participantsConfig.worksheet) {
                     this.$emit('completed', this.participantsConfig)
                 }
             },
             // TODO really??
-            notPriorities: function () {
+            notPriorities() {
                 return _.pickBy(this.participantsConfig.fields, (value, key) => key !== 'priorities')
             }
         }
