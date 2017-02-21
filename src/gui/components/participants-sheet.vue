@@ -10,10 +10,16 @@
         <am-multiselect v-if="participantsConfig.worksheet" v-for="(field, key) in notPriorities(participantsConfig.fields)" v-model="participantsConfig.fields[key]"
             @input="onChange" :values="excelOverview.sheets[participantsConfig.worksheet]" :label="labels[key]">
             </am-multiselect>
+        
+        <div v-if="participantsConfig.worksheet" v-for="(priority, index) in participantsConfig.fields.priorities">
 
-            <am-multiselect v-if="participantsConfig.worksheet" v-for="(priority, index) in participantsConfig.fields.priorities" v-model="participantsConfig.fields.priorities[index].column"
-                @input="onChange" :values="excelOverview.sheets[participantsConfig.worksheet]" :label="(index + 1) + '. ' + labels['priorities']">
-                </am-multiselect>
+            <label>{{(index + 1) + '. ' + labels['priorities']}}</label>
+            <select @input="onChange" v-model="participantsConfig.fields.priorities[index].column">
+                <option v-for="selectableValue in excelOverview.sheets[participantsConfig.worksheet]">{{selectableValue}}</option>
+            </select>
+            <button v-on:click="removePriority(index)">-</button>
+        </div>
+        <button v-on:click="addPriority">Prioritaet hinzufuegen</button>
     </div>
 </template>
 
@@ -31,7 +37,7 @@
                         name: '',
                         firstName: '',
                         class: '',
-                        priorities: [{ column: '' }, { column: '' }, { column: '' }]
+                        priorities: [{ column: null }, { column: null }, { column: null }]
                     }
 
                 },
@@ -54,6 +60,12 @@
             // TODO really??
             notPriorities() {
                 return _.pickBy(this.participantsConfig.fields, (value, key) => key !== 'priorities')
+            },
+            removePriority(index) {
+                this.participantsConfig.fields.priorities.splice(index, 1)
+            },
+            addPriority: function() {
+                this.participantsConfig.fields.priorities.push({ column: null })
             }
         }
     }
