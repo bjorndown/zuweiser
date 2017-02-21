@@ -40,7 +40,7 @@ export function match({ students, courses }) {
                 course.students.push(student)
                 student.matched = true
             } else {
-                course.waitingList.push(student)
+                course.waitingList.push({ student, priority: currentPriorityIndex })
             }
         })
 

@@ -20,11 +20,18 @@
                 <template v-if="printWaitingList">
                     <h4>Warteliste</h4>
                     <table>
+                        <thead>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Priorität</th>
+                        </thead>
                         <tbody>
-                            <tr v-for="student in course.waitingList">
-                                <td>{{student.firstName}}</td>
-                                <td>{{student.name}}</td>
-                                <td>{{student.class}}</td>
+                            <tr v-for="slot in course.waitingList">
+                                <td>{{slot.student.firstName}}</td>
+                                <td>{{slot.student.name}}</td>
+                                <td>{{slot.student.class}}</td>
+                                <td>{{slot.priority}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -45,3 +52,9 @@
     }
 
 </script>
+
+<style scoped>
+    table tr td {
+        padding: .2em
+    }
+</style>
