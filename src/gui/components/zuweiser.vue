@@ -1,22 +1,28 @@
 <template>
-    <div>
-        <am-excel-reader @excel-overview-loaded="onOverviewLoaded">
-        </am-excel-reader>
+    <div class="container">
+        <div class="row">
+            <am-excel-reader @excel-overview-loaded="onOverviewLoaded" class="col-md-12">
+            </am-excel-reader>
+        </div>
 
-        <div v-if="excelOverview">
+        <div v-if="excelOverview" class="row">
             <h2>Blaetter &amp; Spalten auswaehlen</h2>
 
-            <am-activities-sheet-config @completed="activitiesConfigCompleted" :excel-overview="excelOverview">
+            <am-activities-sheet-config @completed="activitiesConfigCompleted" :excel-overview="excelOverview" class="col-md-6">
             </am-activities-sheet-config>
 
-            <am-participants-sheet-config @completed="participantsConfigCompleted" :excel-overview="excelOverview">
+            <am-participants-sheet-config @completed="participantsConfigCompleted" :excel-overview="excelOverview" class="col-md-6">
             </am-participants-sheet-config>
         </div>
 
-        <am-do-matching :config="matchConfig" @matched="onMatched">
-        </am-do-matching>
+        <div class="row">
+            <am-do-matching :config="matchConfig" @matched="onMatched" class="col-md-12">
+            </am-do-matching>
+        </div>
 
-        <am-result-printer :result="result"></am-result-printer>
+        <div class="row">
+            <am-result-printer :result="result" class="col-md-12"></am-result-printer>
+        </div>
     </div>
 </template>
 

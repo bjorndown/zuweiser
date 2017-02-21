@@ -1,7 +1,8 @@
 import {getRowsAsObjects} from './reader'
 import {convertStudent, convertCourse} from './model'
 
-export {match} from './matcher'
+export {Student, Course} from './model'
+export {match, NotExistError, NotUniqueError} from './matcher'
 export {readExcel, getOverview} from './reader'
 
 export function readCourses({ workbook, config }) {

@@ -19,7 +19,17 @@ module.exports = {
     {
       test: /\.vue$/,
       loader: 'vue-loader'
-    }]
+    },
+    {
+      test: /\.css$/,
+      loader: 'style-loader!css-loader'
+    },
+    {
+      test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: "url-loader?limit=10000&minetype=application/font-woff"
+    },
+    {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader"}
+    ]
   },
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules'],
@@ -29,5 +39,5 @@ module.exports = {
       vue: 'vue/dist/vue.common.js'
     }
   },
-  devtool: 'cheap-eval-source-map'
+  devtool: 'source-map'
 }

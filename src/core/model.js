@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-class Course {
+export class Course {
     constructor(courseData) {
         this.courseData = courseData
         this.students = []
@@ -24,7 +24,7 @@ class Course {
     }
 }
 
-class Student {
+export class Student {
 
     constructor(studentData) {
         this.studentData = studentData
@@ -52,7 +52,7 @@ class Student {
     }
 
     toString() {
-        return this.studentData.firstName + ' ' + this.studentData.name
+        return this.firstName + ' ' + this.name
     }
 }
 

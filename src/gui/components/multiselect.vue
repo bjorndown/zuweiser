@@ -1,6 +1,6 @@
 <template>
     <div>
-        <label>{{label}}</label>
+        <label v-if="label">{{label}}</label>
         <select @input="onSelected">
         <option>Bitte auswaehlen</option>
         <option v-for="selectableValue in values">{{selectableValue}}</option>
