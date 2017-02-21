@@ -2,7 +2,7 @@
     <div>
         <label v-if="label">{{label}}</label>
         <select @input="onSelected">
-        <option>Bitte auswaehlen</option>
+        <option>Bitte auswählen</option>
         <option v-for="selectableValue in values">{{selectableValue}}</option>
         </select>
     </div>

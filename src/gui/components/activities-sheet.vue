@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3>Aktivitaeten</h3>
+        <h3>Aktivitäten</h3>
         <h4>Arbeitsblatt</h4>
         <am-multiselect v-model="activitiesConfig.worksheet" @input="onChange" :values="Object.keys(excelOverview.sheets)">
         </am-multiselect>

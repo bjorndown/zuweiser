@@ -1,7 +1,7 @@
 <template>
     <div>
         <p style="color: red">{{errorMessage}}</p>
-        <button v-if="config.student && config.courses" @click="matchAndWrite">Prioritaeten aufloesen</button>
+        <button v-if="config.student && config.courses" @click="matchAndWrite">Prioritäten auflösen</button>
     </div>
 </template>
 

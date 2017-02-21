@@ -19,7 +19,7 @@
             </select>
             <button v-on:click="removePriority(index)">-</button>
         </div>
-        <button v-on:click="addPriority">Prioritaet hinzufuegen</button>
+        <button v-on:click="addPriority">Priorität hinzufügen</button>
     </div>
 </template>
 
@@ -47,7 +47,7 @@
                     name: 'Name',
                     firstName: 'Vorname',
                     class: 'Klasse',
-                    priorities: 'Prioritaet'
+                    priorities: 'Priorität'
                 }
             }
         },

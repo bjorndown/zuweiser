@@ -6,7 +6,7 @@
         </div>
 
         <div v-if="excelOverview" class="row">
-            <h2>Blaetter &amp; Spalten auswaehlen</h2>
+            <h2>Blätter &amp; Spalten auswählen</h2>
 
             <am-activities-sheet-config @completed="activitiesConfigCompleted" :excel-overview="excelOverview" class="col-md-6">
             </am-activities-sheet-config>
