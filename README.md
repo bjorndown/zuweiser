@@ -33,6 +33,19 @@ Participants, with the following columns:
 - Class (for now, at least)
 - n priorities (referring to activities using their ID)
 
+## Build and run it yourself
+In order to run it locally run
+```
+yarn
+```
+and then either
+```
+yarn run dev-server
+```
+or if you are running docker:
+```
+sh build.sh && sh deploy.sh
+```
 
 ## Built with
 - [js-xlsx](https://github.com/SheetJS/js-xlsx)

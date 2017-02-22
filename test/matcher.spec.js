@@ -1,9 +1,9 @@
 /* globals describe, it, xit */
-const assert = require('assert')
-const expect = require('expect.js')
+import assert from 'assert'
+import expect from 'expect.js'
 
-const {match} = require('../src/core/matcher')
-const {Student, Course} = require('../src/core/model')
+import {match} from '../src/core/matcher'
+import {Student, Course} from '../src/core/model'
 
 function hasExactParticipants(activity, ...students) {
     assert.equal(activity.students.length, students.length)
@@ -64,7 +64,7 @@ describe('matcher module', () => {
 
             expect(match)
                 .withArgs({ students: [student1, student2], courses: [] })
-                .to.throwException(/Participants' ids not unique/)
+                .to.throwException(/id not unique for entity Participant/)
         })
 
         it('should fail if course ids are not unique', () => {
@@ -73,7 +73,7 @@ describe('matcher module', () => {
 
             expect(match)
             .withArgs({ students: [], courses: [course1, course2] })
-            .to.throwException(/Activities' ids not unique/)
+            .to.throwException(/id not unique for entity Activity/)
         })
 
         it('should fail if chosen activity does not exist', () => { 
@@ -82,7 +82,7 @@ describe('matcher module', () => {
 
             expect(match)
             .withArgs({ students: [student1], courses: [course1] })
-            .to.throwException(/Activity does not exist/)
+            .to.throwException(/Activity with id=2 does not exist. Referred to by undefined undefined./)
         })
 
         it('should fail if choices per participant are not unique', () => {
@@ -91,7 +91,7 @@ describe('matcher module', () => {
 
             expect(match)
             .withArgs({ students: [student1], courses: [course1] })
-            .to.throwException(/Choices not unique/)
+            .to.throwException(/priorities not unique for entity Participant/)
         })
 
         xit('should mark students as unmatched if none of their priorities could be met', () => {
