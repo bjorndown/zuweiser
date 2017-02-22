@@ -17,9 +17,9 @@
             <select @input="onChange" v-model="participantsConfig.fields.priorities[index].column">
                 <option v-for="selectableValue in excelOverview.sheets[participantsConfig.worksheet]">{{selectableValue}}</option>
             </select>
-            <button v-on:click="removePriority(index)">-</button>
+            <button @click="removePriority(index)">-</button>
         </div>
-        <button v-on:click="addPriority">Priorität hinzufügen</button>
+        <button @click="addPriority()">Priorität hinzufügen</button>
     </div>
 </template>
 
