@@ -1,3 +1,5 @@
+import * as _ from 'lodash'
+
 import {getRowsAsObjects} from './reader'
 import {convertStudent, convertCourse} from './model'
 
@@ -14,5 +16,7 @@ export function readCourses({ workbook, config }) {
 export function readStudents({ workbook, courses, config }) {
     let rawStudents = getRowsAsObjects(workbook, config.student.worksheet)
     let students = rawStudents.map(rawStudent => convertStudent(rawStudent, config.student.fields))
-    return { workbook, students, courses, config }
+    // TODO add GUI option for shuffling
+    let shuffledStudents = _.shuffle(students)
+    return { workbook, students: shuffledStudents, courses, config }
 }
