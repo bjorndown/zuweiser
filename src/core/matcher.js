@@ -36,11 +36,18 @@ export function match({ students, courses }) {
         students.forEach(student => {
             const priorityToMatch = student.priorities[currentPriorityIndex]
             const course = _.find(courses, course => course.id === priorityToMatch)
-            if (course.students.length < course.limit && !student.matched) {
+            const isNotCourseFull = course.students.length < course.limit
+
+            if (!student.matched && isNotCourseFull) {
                 course.students.push(student)
                 student.matched = true
             } else {
-                course.waitingList.push({ student, priority: currentPriorityIndex })
+                course.shadows.push({ 
+                    student, 
+                    wasCourseFull: !isNotCourseFull,
+                    wasAlreadyMatched: student.matched,
+                    priority: currentPriorityIndex + 1 
+                })
             }
         })
 

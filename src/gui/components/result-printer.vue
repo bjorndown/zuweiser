@@ -4,8 +4,8 @@
             <div class="col-md-12">
                 <h2>Resultat</h2>
 
-                <label for="printWaitingList">Wartelisten anzeigen</label>
-                <input type="checkbox" v-model="printWaitingList">
+                <label for="printShadows">Schattenteilnehmer anzeigen</label>
+                <input type="checkbox" v-model="printShadows">
             </div>
         </div>
         <div class="row">
@@ -14,29 +14,38 @@
                     <li v-for="course in result.courses">
                         <h3>{{course.name}}</h3>
                         <table>
+                            <thead>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Priorität</th>
+                            </thead>
                             <tbody>
                                 <tr v-for="student in course.students">
                                     <td>{{student.firstName}}</td>
                                     <td>{{student.name}}</td>
                                     <td>{{student.class}}</td>
+                                    <td>{{student.priorities.indexOf(course.id) + 1}}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <template v-if="printWaitingList">
-                            <h4>Warteliste</h4>
+                        <template v-if="printShadows">
+                            <h4>Schattenteilnehmer</h4>
                             <table>
                                 <thead>
                                     <th></th>
                                     <th></th>
                                     <th></th>
                                     <th>Priorität</th>
+                                    <th>Grund</th>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="slot in course.waitingList">
-                                        <td>{{slot.student.firstName}}</td>
-                                        <td>{{slot.student.name}}</td>
-                                        <td>{{slot.student.class}}</td>
-                                        <td>{{slot.priority}}</td>
+                                    <tr v-for="shadow in course.shadows">
+                                        <td>{{shadow.student.firstName}}</td>
+                                        <td>{{shadow.student.name}}</td>
+                                        <td>{{shadow.student.class}}</td>
+                                        <td>{{shadow.priority}}</td>
+                                        <td>{{getReason(shadow)}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -74,7 +83,7 @@
         props: ['result'],
         data() {
             return {
-                printWaitingList: false
+                printShadows: false
             }
         },
         methods: {
@@ -83,6 +92,15 @@
             },
             numberOfPriorities(participants) {
                 return _.range(1, participants[0].priorities.length + 1)
+            },
+            getReason(shadow) {
+                let reasons = []
+                if (shadow.wasAlreadyMatched) {
+                    reasons.push('Bereits zugewiesen') 
+                } else if (shadow.wasCourseFull) {
+                    reasons.push('Aktivität voll')
+                }
+                return reasons.join(', ')
             }
         }
     }

@@ -4,7 +4,7 @@ export class Course {
     constructor(courseData) {
         this.courseData = courseData
         this.students = []
-        this.waitingList = []
+        this.shadows = []
     }
 
     get id() {
