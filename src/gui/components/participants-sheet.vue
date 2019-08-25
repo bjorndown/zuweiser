@@ -7,7 +7,7 @@
         </am-multiselect>
 
         <h4>Spalten</h4>
-        <am-multiselect v-if="participantsConfig.worksheet" v-for="(field, key) in notPriorities(participantsConfig.fields)" v-model="participantsConfig.fields[key]"
+        <am-multiselect v-if="participantsConfig.worksheet" v-for="(field, key) in notPriorities(participantsConfig.fields)" :key="field.id" v-model="participantsConfig.fields[key]"
             @input="onChange" :values="excelOverview.sheets[participantsConfig.worksheet]" :label="labels[key]">
             </am-multiselect>
         
