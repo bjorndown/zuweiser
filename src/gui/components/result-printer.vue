@@ -15,38 +15,38 @@
                         <h3>{{course.name}}</h3>
                         <table>
                             <thead>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>Priorität</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Priorität</th>
                             </thead>
                             <tbody>
-                                <tr v-for="student in course.students">
-                                    <td>{{student.firstName}}</td>
-                                    <td>{{student.name}}</td>
-                                    <td>{{student.class}}</td>
-                                    <td>{{student.priorities.indexOf(course.id) + 1}}</td>
-                                </tr>
+                            <tr v-for="student in course.students">
+                                <td>{{student.firstName}}</td>
+                                <td>{{student.name}}</td>
+                                <td>{{student.class}}</td>
+                                <td>{{student.priorities.indexOf(course.id) + 1}}</td>
+                            </tr>
                             </tbody>
                         </table>
                         <template v-if="printShadows">
                             <h4>Schattenteilnehmer</h4>
                             <table>
                                 <thead>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>Priorität</th>
-                                    <th>Grund</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Priorität</th>
+                                <th>Grund</th>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="shadow in course.shadows">
-                                        <td>{{shadow.student.firstName}}</td>
-                                        <td>{{shadow.student.name}}</td>
-                                        <td>{{shadow.student.class}}</td>
-                                        <td>{{shadow.priority}}</td>
-                                        <td>{{getReason(shadow)}}</td>
-                                    </tr>
+                                <tr v-for="shadow in course.shadows">
+                                    <td>{{shadow.student.firstName}}</td>
+                                    <td>{{shadow.student.name}}</td>
+                                    <td>{{shadow.student.class}}</td>
+                                    <td>{{shadow.priority}}</td>
+                                    <td>{{getReason(shadow)}}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </template>
@@ -57,18 +57,18 @@
                 <h3>Nicht-zuweisbare Teilnehmer</h3>
                 <table>
                     <thead>
-                        <th/>
-                        <th/>
-                        <th/>
-                        <th v-for="priority in numberOfPriorities(result.students)">Priorität {{priority}}</th>
+                    <th/>
+                    <th/>
+                    <th/>
+                    <th v-for="priority in numberOfPriorities(result.students)">Priorität {{priority}}</th>
                     </thead>
                     <tbody>
-                        <tr v-for="participant in findUnmatched(result.students)">
-                            <td>{{participant.firstName}}</td>
-                            <td>{{participant.name}}</td>
-                            <td>{{participant.class}}</td>
-                            <td v-for="priority in participant.priorities">{{priority}}</td>
-                        </tr>
+                    <tr v-for="participant in findUnmatched(result.students)">
+                        <td>{{participant.firstName}}</td>
+                        <td>{{participant.name}}</td>
+                        <td>{{participant.class}}</td>
+                        <td v-for="priority in participant.priorities">{{priority}}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -88,15 +88,15 @@
         },
         methods: {
             findUnmatched(participants) {
-                return _.filter(participants, participant => !participant.matched)
+                return _.filter(participants, (participant) => !participant.matched)
             },
             numberOfPriorities(participants) {
                 return _.range(1, participants[0].priorities.length + 1)
             },
             getReason(shadow) {
-                let reasons = []
+                const reasons = []
                 if (shadow.wasAlreadyMatched) {
-                    reasons.push('Bereits zugewiesen') 
+                    reasons.push('Bereits zugewiesen')
                 } else if (shadow.wasCourseFull) {
                     reasons.push('Aktivität voll')
                 }

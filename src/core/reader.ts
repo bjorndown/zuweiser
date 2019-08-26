@@ -8,7 +8,7 @@ export function getRowsAsObjects(workbook: WorkBook, worksheetName: string) {
 
 function readHeaderColumns(worksheet: WorkSheet) {
     // FIXME any
-    let rowsInSheet: any = XLSX.utils.sheet_to_json(worksheet)
+    const rowsInSheet: any = XLSX.utils.sheet_to_json(worksheet)
     return Object.keys(rowsInSheet[0])
 }
 
@@ -17,12 +17,12 @@ function readRows(worksheet: WorkSheet) {
 }
 
 export function readExcel(file: Blob) {
-    let reader = new FileReader()
-    let promise = new Promise(function (resolve, reject) {
+    const reader = new FileReader()
+    const promise = new Promise(function (resolve, reject) {
         reader.onload = function (e: any) { // FIXME
             const data = e.target.result
             try {
-                let wb = XLSX.read(data, { type: 'binary' })
+                const wb = XLSX.read(data, {type: 'binary'})
                 resolve(wb)
             } catch (e) {
                 reject(e)
@@ -35,11 +35,11 @@ export function readExcel(file: Blob) {
 }
 
 export function getOverview(workbook: WorkBook) {
-    let excelOverview: { [key: string]: string[]} = {}
-    for (let sheetName of workbook.SheetNames) {
+    const excelOverview: { [key: string]: string[] } = {}
+    for (const sheetName of workbook.SheetNames) {
         // FIXME any
-        let rowsInSheet: any = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+        const rowsInSheet: any = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
         excelOverview[sheetName] = Object.keys(rowsInSheet[0])
     }
-    return { sheets: excelOverview }
+    return {sheets: excelOverview}
 }

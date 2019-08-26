@@ -1,28 +1,36 @@
 import * as _ from 'lodash'
-import * as util from 'util'
 
-import {Student, Course} from './model'
+import {Course, Student} from './model'
 
-export function NotUniqueError(entityType, propertyName, entity = {}) {
-    this.message = `${propertyName} not unique for entity ${entityType}`
-    this.entityType = entityType
-    this.propertyName = propertyName
-    this.entity = entity
+export class NotUniqueError extends Error {
+    private entityType: any
+    private propertyName: any
+    private entity: {}
+
+    constructor(entityType, propertyName, entity = {}) {
+        super(`${propertyName} not unique for entity ${entityType}`)
+        Object.setPrototypeOf(this, NotUniqueError.prototype)
+        this.entityType = entityType
+        this.propertyName = propertyName
+        this.entity = entity
+    }
 }
 
-export function NotExistError(entityType, id, referrer = {}) {
-    this.message = `${entityType} with id=${id} does not exist. Referred to by ${referrer}.`
-    this.entityType = entityType
-    this.id = id
-    this.referrer = referrer
+export class NotExistError extends Error {
+    private entityType: any
+    private id: any
+    private referrer: {}
+
+    constructor(entityType, id, referrer = {}) {
+        super(`${entityType} with id=${id} does not exist. Referred to by ${referrer}.`)
+        Object.setPrototypeOf(this, NotExistError.prototype)
+        this.entityType = entityType
+        this.id = id
+        this.referrer = referrer
+    }
 }
 
-// Since babel (and Typescript) cannot handle subclassing Error
-// courtesy of https://www.metachris.com/2017/01/custom-errors-in-typescript-2.1/
-util.inherits(NotUniqueError, Error)
-util.inherits(NotExistError, Error)
-
-export function match({ students, courses }) {
+export function match({students, courses}) {
     assertActivityIdsAreUnique(courses)
     assertParticipantsIdsAreUnique(students)
     assertChosenActivitiesDoExist(students, courses)
@@ -33,20 +41,20 @@ export function match({ students, courses }) {
 
     while (currentPriorityIndex < totalNumOfPriorities) {
 
-        students.forEach(student => {
+        students.forEach((student) => {
             const priorityToMatch = student.priorities[currentPriorityIndex]
-            const course = _.find(courses, course => course.id === priorityToMatch)
-            const isNotCourseFull = course.students.length < course.limit
+            const currentCourse = _.find(courses, (course) => course.id === priorityToMatch)
+            const isNotCourseFull = currentCourse.students.length < currentCourse.limit
 
             if (!student.matched && isNotCourseFull) {
-                course.students.push(student)
+                currentCourse.students.push(student)
                 student.matched = true
             } else {
-                course.shadows.push({ 
-                    student, 
+                currentCourse.shadows.push({
+                    student,
                     wasCourseFull: !isNotCourseFull,
                     wasAlreadyMatched: student.matched,
-                    priority: currentPriorityIndex + 1 
+                    priority: currentPriorityIndex + 1
                 })
             }
         })
@@ -54,14 +62,14 @@ export function match({ students, courses }) {
         currentPriorityIndex = currentPriorityIndex + 1
     }
 
-    return { students, courses }
+    return {students, courses}
 }
 
 function assertParticipantsIdsAreUnique(students) {
     const idSet = new Set()
-    students.forEach(student => {
+    students.forEach((student) => {
         if (idSet.has(student.id)) {
-            throw new NotUniqueError('Participant', 'id', new Student())
+            throw new NotUniqueError('Participant', 'id', new Student({}))
         } else {
             idSet.add(student.id)
         }
@@ -70,9 +78,9 @@ function assertParticipantsIdsAreUnique(students) {
 
 function assertActivityIdsAreUnique(courses) {
     const idSet = new Set()
-    courses.forEach(course => {
+    courses.forEach((course) => {
         if (idSet.has(course.id)) {
-            throw new NotUniqueError('Activity', 'id', new Course())
+            throw new NotUniqueError('Activity', 'id', new Course({}))
         } else {
             idSet.add(course.id)
         }
@@ -80,9 +88,9 @@ function assertActivityIdsAreUnique(courses) {
 }
 
 function assertChoicesPerParticipantAreUnique(students) {
-    students.forEach(student => {
-        let originalLength = student.priorities.length
-        let dedupedLength = _.uniq(student.priorities).length
+    students.forEach((student) => {
+        const originalLength = student.priorities.length
+        const dedupedLength = _.uniq(student.priorities).length
         if (originalLength !== dedupedLength) {
             throw new NotUniqueError('Participant', 'priorities', student)
         }
@@ -90,10 +98,10 @@ function assertChoicesPerParticipantAreUnique(students) {
 }
 
 function assertChosenActivitiesDoExist(students, courses) {
-    const courseIds = courses.map(course => course.id)
-    students.forEach(student => {
-        student.priorities.forEach(priority => {
-            if (!_.find(courseIds, courseId => courseId === priority)) {
+    const courseIds = courses.map((course) => course.id)
+    students.forEach((student) => {
+        student.priorities.forEach((priority) => {
+            if (!_.find(courseIds, (courseId) => courseId === priority)) {
                 throw new NotExistError('Activity', priority, student)
             }
         })

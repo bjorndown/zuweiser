@@ -29,14 +29,14 @@
 <script>
     import Vue from 'vue'
 
-    import activitiesSheetConfig from './activities-sheet.vue'
-    import excelReader from './excel-reader.vue'
-    import participantSheetConfig from './participants-sheet.vue'
-    import matcher from './matcher.vue'
-    import multiselect from './multiselect.vue'
-    import resultPrinter from './result-printer.vue'
+    import activitiesSheetConfigComponent from './activities-sheet.vue'
+    import excelReaderComponent from './excel-reader.vue'
+    import participantSheetConfigComponent from './participants-sheet.vue'
+    import matcherComponent from './matcher.vue'
+    import multiselectComponent from './multiselect.vue'
+    import resultPrinterComponent from './result-printer.vue'
 
-    Vue.component('am-multiselect', multiselect)
+    Vue.component('am-multiselect', multiselectComponent)
 
     export default {
         data() {
@@ -47,27 +47,60 @@
             }
         },
         components: {
-            'am-excel-reader': excelReader,
-            'am-activities-sheet-config': activitiesSheetConfig,
-            'am-participants-sheet-config': participantSheetConfig,
-            'am-do-matching': matcher,
-            'am-result-printer': resultPrinter
+            'am-excel-reader': excelReaderComponent,
+            'am-activities-sheet-config': activitiesSheetConfigComponent,
+            'am-participants-sheet-config': participantSheetConfigComponent,
+            'am-do-matching': matcherComponent,
+            'am-result-printer': resultPrinterComponent
         },
         methods: {
-            onOverviewLoaded: function (excelOverview) {
+            onOverviewLoaded(excelOverview) {
                 this.excelOverview = excelOverview
                 this.matchConfig.filename = excelOverview.filename
             },
-            activitiesConfigCompleted: function (activitiesSheetConfig) {
+            activitiesConfigCompleted(activitiesSheetConfig) {
                 this.matchConfig.courses = activitiesSheetConfig
             },
-            participantsConfigCompleted: function (participantSheetConfig) {
+            participantsConfigCompleted(participantSheetConfig) {
                 this.matchConfig.student = participantSheetConfig
             },
-            onMatched: function (result) {
+            onMatched(result) {
                 this.result = result
             }
         }
     }
 
 </script>
+
+<style>
+    .wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 10px;
+        grid-auto-rows: minmax(100px, auto);
+    }
+    .one {
+        grid-column: 1 / 3;
+        grid-row: 1;
+    }
+    .two {
+        grid-column: 2 / 4;
+        grid-row: 1 / 3;
+    }
+    .three {
+        grid-column: 1;
+        grid-row: 2 / 5;
+    }
+    .four {
+        grid-column: 3;
+        grid-row: 3;
+    }
+    .five {
+        grid-column: 2;
+        grid-row: 4;
+    }
+    .six {
+        grid-column: 3;
+        grid-row: 4;
+    }
+</style>

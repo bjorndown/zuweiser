@@ -18,6 +18,8 @@
     "trailing-comma": false,
     "semicolon": false,
     "no-console": false,
-    "only-arrow-functions": false
+    "only-arrow-functions": false,
+    "max-classes-per-file": false,
+    "space-before-function-paren": false
   }
 }

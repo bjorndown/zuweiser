@@ -1,63 +1,69 @@
 import * as _ from 'lodash'
 
 export class Course {
+    private courseData: any
+    private students: any[]
+    private shadows: any[]
+
     constructor(courseData) {
         this.courseData = courseData
         this.students = []
         this.shadows = []
     }
 
-    get id() {
+    public get id() {
         return this.courseData.id
     }
 
-    get limit() {
+    public get limit() {
         return this.courseData.limit
     }
 
-    get name() {
+    public get name() {
         return this.courseData.name
     }
 
-    toString() {
+    public toString() {
         return this.name
     }
 }
 
 export class Student {
+    public matched: boolean
+    private studentData: any
 
     constructor(studentData) {
         this.studentData = studentData
         this.matched = false
     }
 
-    get id() {
+    public get id() {
         return this.studentData.id
     }
 
-    get priorities() {
+    public get priorities() {
         return this.studentData.priorities
     }
 
-    get name() {
+    public get name() {
         return this.studentData.name
     }
 
-    get firstName() {
+    public get firstName() {
         return this.studentData.firstName
     }
 
-    get class() {
+    public get class() {
         return this.studentData.class
     }
 
-    toString() {
+    public toString() {
         return this.firstName + ' ' + this.name
     }
 }
 
 export function mapRawToObjFields(rawObj, fields) {
-    let obj = {}
+    const obj = {}
     // TODO clean up
     _.forOwn(fields, (value, key) => {
         if (_.isString(value)) {
@@ -73,11 +79,11 @@ export function mapRawToObjFields(rawObj, fields) {
 }
 
 export function convertStudent(rawStudent, studentFields) {
-    let studentData = mapRawToObjFields(rawStudent, studentFields)
+    const studentData = mapRawToObjFields(rawStudent, studentFields)
     return new Student(studentData)
 }
 
 export function convertCourse(rawCourse, courseFields) {
-    let courseData = mapRawToObjFields(rawCourse, courseFields)
+    const courseData = mapRawToObjFields(rawCourse, courseFields)
     return new Course(courseData)
 }

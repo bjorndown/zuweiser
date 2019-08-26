@@ -8,29 +8,29 @@
 </template>
 
 <script>
-    import { readExcel, getOverview } from '../../core/index'
+    import {getOverview, readExcel} from '../../core'
 
     export default {
         data() {
             return {
                 filename: '',
-                error: { message: '' }
+                error: {message: ''}
             }
         },
         methods: {
             loadExcel(e) {
-                let fileBlob = e.target.files[0]
+                const fileBlob = e.target.files[0]
 
                 readExcel(fileBlob)
                     .then(getOverview)
-                    .then(overview => {
-                        // TODO maybe do this in getOverview?! 
+                    .then((overview) => {
+                        // TODO maybe do this in getOverview?!
                         // TODO rename, since its a blob
                         overview.filename = fileBlob
                         return overview
                     })
-                    .then(overview => this.$emit('excel-overview-loaded', overview))
-                    .catch(e => this.error.message = e.toString())
+                    .then((overview) => this.$emit('excel-overview-loaded', overview))
+                    .catch((error) => this.error.message = error.toString())
             }
         }
     }

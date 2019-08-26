@@ -6,7 +6,7 @@
 </template>
 
 <script>
-    import { readExcel, readCourses, readStudents, match } from '../../core/index'
+    import {match, readCourses, readExcel, readStudents} from '../../core'
     import {translateException} from '../translation'
 
     export default {
@@ -21,12 +21,14 @@
                 this.errorMessage = ''
 
                 readExcel(this.config.filename)
-                    .then(workbook => { return { workbook: workbook, config: this.config } })
+                    .then((workbook) => {
+                        return {workbook, config: this.config}
+                    })
                     .then(readCourses)
                     .then(readStudents)
                     .then(match)
-                    .then(result => this.$emit('matched', result))
-                    .catch(error => {
+                    .then((result) => this.$emit('matched', result))
+                    .catch((error) => {
                         this.errorMessage = translateException(error)
                     })
             }
