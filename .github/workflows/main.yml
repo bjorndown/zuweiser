@@ -13,3 +13,10 @@ jobs:
     - run: yarn lint
     - run: yarn test:unit
     - run: yarn build 
+    - run: ls -l
+    - name: Deploy
+      uses: docker://peaceiris/gh-pages:v2
+      env:
+        PERSONAL_TOKEN: ${{ secrets.GITHUB_PAT }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./dist
