@@ -5,12 +5,14 @@
         <am-multiselect v-model="activitiesConfig.worksheet" @input="onChange"
                         :values="Object.keys(excelOverview.sheets)">
         </am-multiselect>
-        <h4>Spalten</h4>
-        <am-multiselect v-if="activitiesConfig.worksheet" v-for="(field, key) in activitiesConfig.fields"
-                        :key="field.id" v-model="activitiesConfig.fields[key]"
-                        @input="onChange" :values="excelOverview.sheets[activitiesConfig.worksheet]"
-                        :label="labels[key]">
-        </am-multiselect>
+        <template v-if="activitiesConfig.worksheet">
+            <h4>Spalten</h4>
+            <am-multiselect v-for="(field, key) in activitiesConfig.fields"
+                            :key="field.id" v-model="activitiesConfig.fields[key]"
+                            @input="onChange" :values="excelOverview.sheets[activitiesConfig.worksheet]"
+                            :label="labels[key]">
+            </am-multiselect>
+        </template>
     </div>
 </template>
 

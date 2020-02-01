@@ -7,25 +7,27 @@
                         :values="Object.keys(excelOverview.sheets)">
         </am-multiselect>
 
-        <h4>Spalten</h4>
-        <am-multiselect v-if="participantsConfig.worksheet"
-                        v-for="(field, key) in notPriorities(participantsConfig.fields)" :key="field.id"
-                        v-model="participantsConfig.fields[key]"
-                        @input="onChange" :values="excelOverview.sheets[participantsConfig.worksheet]"
-                        :label="labels[key]">
-        </am-multiselect>
+        <template v-if="participantsConfig.worksheet">
+            <h4>Spalten</h4>
+            <am-multiselect
+                            v-for="(field, key) in notPriorities(participantsConfig.fields)" :key="field.id"
+                            v-model="participantsConfig.fields[key]"
+                            @input="onChange" :values="excelOverview.sheets[participantsConfig.worksheet]"
+                            :label="labels[key]">
+            </am-multiselect>
 
-        <div v-if="participantsConfig.worksheet" v-for="(priority, index) in participantsConfig.fields.priorities">
+            <div v-for="(priority, index) in participantsConfig.fields.priorities">
 
-            <label>{{(index + 1) + '. ' + labels['priorities']}}</label>
-            <select @input="onChange" v-model="participantsConfig.fields.priorities[index].column">
-                <option v-for="selectableValue in excelOverview.sheets[participantsConfig.worksheet]">
-                    {{selectableValue}}
-                </option>
-            </select>
-            <button @click="removePriority(index)">-</button>
-        </div>
-        <button @click="addPriority()">Priorität hinzufügen</button>
+                <label>{{(index + 1) + '. ' + labels['priorities']}}</label>
+                <select @input="onChange" v-model="participantsConfig.fields.priorities[index].column">
+                    <option v-for="selectableValue in excelOverview.sheets[participantsConfig.worksheet]">
+                        {{selectableValue}}
+                    </option>
+                </select>
+                <button @click="removePriority(index)">-</button>
+            </div>
+            <button @click="addPriority()">Priorität hinzufügen</button>
+        </template>
     </div>
 </template>
 

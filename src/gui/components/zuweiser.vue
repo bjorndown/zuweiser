@@ -1,28 +1,22 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <am-excel-reader @excel-overview-loaded="onOverviewLoaded" class="col-md-12">
-            </am-excel-reader>
-        </div>
+    <div>
+        <h1>Zuweiser</h1>
+        <am-excel-reader @excel-overview-loaded="onOverviewLoaded">
+        </am-excel-reader>
 
-        <div v-if="excelOverview" class="row">
-            <h2 class="col-md-12">Blätter &amp; Spalten auswählen</h2>
+        <div v-if="excelOverview" id="sheet-config">
+            <h2 id="config-header">Blätter &amp; Spalten auswählen</h2>
 
-            <am-activities-sheet-config @completed="activitiesConfigCompleted" :excel-overview="excelOverview" class="col-md-6">
+            <am-activities-sheet-config id="config-activities" @completed="activitiesConfigCompleted" :excel-overview="excelOverview">
             </am-activities-sheet-config>
 
-            <am-participants-sheet-config @completed="participantsConfigCompleted" :excel-overview="excelOverview" class="col-md-6">
+            <am-participants-sheet-config id="config-participants" @completed="participantsConfigCompleted" :excel-overview="excelOverview">
             </am-participants-sheet-config>
         </div>
 
-        <div class="row">
-            <am-do-matching :config="matchConfig" @matched="onMatched" class="col-md-12">
-            </am-do-matching>
-        </div>
-
-        <div class="row">
-            <am-result-printer :result="result" class="col-md-12"></am-result-printer>
-        </div>
+        <am-do-matching :config="matchConfig" @matched="onMatched">
+        </am-do-matching>
+        <am-result-printer :result="result"></am-result-printer>
     </div>
 </template>
 
@@ -73,34 +67,31 @@
 </script>
 
 <style>
-    .wrapper {
+    label {
+        margin-right: 1em;
+    }
+
+    select {
+        margin-bottom: .6em;
+    }
+
+    #sheet-config {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 10px;
-        grid-auto-rows: minmax(100px, auto);
+        grid-area: config;
+        grid-template-columns: 40% 60%;
+        grid-template-areas:
+            "header header"
+            "activities  participants";
     }
-    .one {
-        grid-column: 1 / 3;
-        grid-row: 1;
+
+    #config-header {
+        grid-area: header;
     }
-    .two {
-        grid-column: 2 / 4;
-        grid-row: 1 / 3;
+
+    #config-activities {
+        grid-area: activities;
     }
-    .three {
-        grid-column: 1;
-        grid-row: 2 / 5;
-    }
-    .four {
-        grid-column: 3;
-        grid-row: 3;
-    }
-    .five {
-        grid-column: 2;
-        grid-row: 4;
-    }
-    .six {
-        grid-column: 3;
-        grid-row: 4;
+    #config-participants {
+        grid-area: participants;
     }
 </style>
