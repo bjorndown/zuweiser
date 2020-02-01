@@ -67,7 +67,7 @@
                 }
             },
             notPriorities() {
-                return _.pickBy(this.participantsConfig.fields, (value, key) => key !== 'priorities')
+                return _.omit(this.participantsConfig.fields, 'priorities')
             },
             removePriority(index) {
                 this.participantsConfig.fields.priorities.splice(index, 1)
