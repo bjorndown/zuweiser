@@ -45,7 +45,7 @@
                         name: '',
                         firstName: '',
                         class: '',
-                        priorities: [{column: null}, {column: null}, {column: null}]
+                        priorities: []
                     }
 
                 },
@@ -62,10 +62,10 @@
         methods: {
             onChange() {
                 if (this.participantsConfig.worksheet) {
+                    this.participantsConfig.fields.priorities = this.populatePriorities()
                     this.$emit('completed', this.participantsConfig)
                 }
             },
-            // TODO really??
             notPriorities() {
                 return _.pickBy(this.participantsConfig.fields, (value, key) => key !== 'priorities')
             },
@@ -74,8 +74,13 @@
             },
             addPriority() {
                 this.participantsConfig.fields.priorities.push({column: null})
+            },
+            populatePriorities() {
+                const participantsColumns = this.excelOverview.sheets[this.participantsConfig.worksheet]
+                const wordThatEndsWithNumber = /^[\w\s]+[0-9]+$/
+                return participantsColumns.filter((column) => wordThatEndsWithNumber.test(column)).map((column) => ({ column }))
             }
-        }
+        },
     }
 
 </script>
