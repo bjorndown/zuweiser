@@ -24,7 +24,7 @@
                         {{selectableValue}}
                     </option>
                 </select>
-                <button @click="removePriority(index)">-</button>
+                <button class="remove-priority" @click="removePriority(index)">-</button>
             </div>
             <button @click="addPriority()">Priorität hinzufügen</button>
         </template>
@@ -84,3 +84,9 @@
     }
 
 </script>
+
+<style scoped>
+    .remove-priority {
+        margin-left: .6em;
+    }
+</style>
