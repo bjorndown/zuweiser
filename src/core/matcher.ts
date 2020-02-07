@@ -1,11 +1,11 @@
 import * as _ from 'lodash'
 
-import {Course, Student} from './model'
+import { Course, Student } from './model'
 
 export class NotUniqueError extends Error {
-    private entityType: any
-    private propertyName: any
-    private entity: {}
+    public entityType: any
+    public propertyName: any
+    public entity: {}
 
     constructor(entityType, propertyName, entity = {}) {
         super(`${propertyName} not unique for entity ${entityType}`)
@@ -17,12 +17,14 @@ export class NotUniqueError extends Error {
 }
 
 export class NotExistError extends Error {
-    private entityType: any
-    private id: any
-    private referrer: {}
+    public entityType: any
+    public id: any
+    public referrer: {}
 
     constructor(entityType, id, referrer = {}) {
-        super(`${entityType} with id=${id} does not exist. Referred to by ${referrer}.`)
+        super(
+            `${entityType} with id=${id} does not exist. Referred to by ${referrer}.`
+        )
         Object.setPrototypeOf(this, NotExistError.prototype)
         this.entityType = entityType
         this.id = id
@@ -30,7 +32,7 @@ export class NotExistError extends Error {
     }
 }
 
-export function match({students, courses}) {
+export function match({ students, courses }) {
     assertActivityIdsAreUnique(courses)
     assertParticipantsIdsAreUnique(students)
     assertChosenActivitiesDoExist(students, courses)
@@ -40,11 +42,14 @@ export function match({students, courses}) {
     const totalNumOfPriorities = students[0].priorities.length // TODO really??
 
     while (currentPriorityIndex < totalNumOfPriorities) {
-
         students.forEach((student) => {
             const priorityToMatch = student.priorities[currentPriorityIndex]
-            const currentCourse = _.find(courses, (course) => course.id === priorityToMatch)
-            const isNotCourseFull = currentCourse.students.length < currentCourse.limit
+            const currentCourse = _.find(
+                courses,
+                (course) => course.id === priorityToMatch
+            )
+            const isNotCourseFull =
+                currentCourse.students.length < currentCourse.limit
 
             if (!student.matched && isNotCourseFull) {
                 currentCourse.students.push(student)
@@ -62,7 +67,7 @@ export function match({students, courses}) {
         currentPriorityIndex = currentPriorityIndex + 1
     }
 
-    return {students, courses}
+    return { students, courses }
 }
 
 function assertParticipantsIdsAreUnique(students) {

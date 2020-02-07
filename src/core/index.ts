@@ -1,22 +1,27 @@
 import * as _ from 'lodash'
 
-import {getRowsAsObjects} from './reader'
-import {convertCourse, convertStudent} from './model'
+import { getRowsAsObjects } from './reader'
+import { convertCourse, convertStudent } from './model'
 
-export {Student, Course} from './model'
-export {match, NotExistError, NotUniqueError} from './matcher'
-export {readExcel, getOverview} from './reader'
+export { Student, Course } from './model'
+export { match, NotExistError, NotUniqueError } from './matcher'
+export { readExcel, getOverview } from './reader'
 
-export function readCourses({workbook, config}) {
+export function readCourses({ workbook, config }) {
     const rawCourses = getRowsAsObjects(workbook, config.courses.worksheet)
-    const courses = rawCourses.map((rawCourse) => convertCourse(rawCourse, config.courses.fields))
-    return {courses, workbook, config}
+    console.log(config.courses.fields)
+    const courses = rawCourses.map((rawCourse) =>
+        convertCourse(rawCourse, config.courses.fields)
+    )
+    return { courses, workbook, config }
 }
 
-export function readStudents({workbook, courses, config}) {
+export function readStudents({ workbook, courses, config }) {
     const rawStudents = getRowsAsObjects(workbook, config.student.worksheet)
-    const students = rawStudents.map((rawStudent) => convertStudent(rawStudent, config.student.fields))
+    const students = rawStudents.map((rawStudent) =>
+        convertStudent(rawStudent, config.student.fields)
+    )
     // TODO add GUI option for shuffling
     const shuffledStudents = _.shuffle(students)
-    return {workbook, students: shuffledStudents, courses, config}
+    return { workbook, students: shuffledStudents, courses, config }
 }

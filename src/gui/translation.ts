@@ -1,4 +1,4 @@
-import { NotExistError, NotUniqueError, Student} from '../core/index'
+import { NotExistError, NotUniqueError, Student } from '../core/index'
 
 // TODO translate
 
@@ -10,11 +10,13 @@ export function translateException(exception) {
             case 'priorities':
                 return `Prioritäten von '${exception.entity.toString()}' sind nicht eindeutig.`
             case 'id':
-                return `IDs der ${translateEntityTypes(exception.entity)} sind nicht eindeutig.`
+                return `IDs der ${translateEntityTypes(
+                    exception.entity
+                )} sind nicht eindeutig.`
             default:
                 break
         }
-    } 
+    }
 
     return `Keine Übersetzung für Fehler: ${exception}`
 }
