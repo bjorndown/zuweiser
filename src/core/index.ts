@@ -9,7 +9,6 @@ export { readExcel, getOverview } from './reader'
 
 export function readCourses({ workbook, config }) {
     const rawCourses = getRowsAsObjects(workbook, config.courses.worksheet)
-    console.log(config.courses.fields)
     const courses = rawCourses.map((rawCourse) =>
         convertCourse(rawCourse, config.courses.fields)
     )

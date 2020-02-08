@@ -1,39 +1,51 @@
 <template>
     <div>
         <label v-if="label">{{ label }}</label>
-        <select @input="onSelected">
-            <option>Bitte auswählen</option>
-            <option
-                v-for="selectableValue in values"
-                :selected="shouldBePreselected(selectableValue)"
-                >{{ selectableValue }}</option
-            >
+        <select v-model="selectedValue" @input="onSelected">
+            <option>{{ initialValue }}</option>
+            <option v-for="value in values">{{ value }}</option>
         </select>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['values', 'value', 'label'],
+    props: ['values', 'label'],
     methods: {
         onSelected(event) {
             this.$emit('input', event.target.value)
             this.isPristine = false
         },
-        shouldBePreselected(value) {
+        preSelect() {
             if (!this.label || !this.isPristine) {
                 return false
             }
-            const normalizedLabel = this.label.trim().toLowerCase()
-            const normalizedValue = value.trim().toLowerCase()
 
-            return normalizedValue.startsWith(normalizedLabel)
+            const normalizedLabel = this.label.trim().toLowerCase()
+
+            for (const value of this.values) {
+                const normalizedValue = value.trim().toLowerCase()
+
+                if (normalizedValue.startsWith(normalizedLabel)) {
+                    this.$emit('input', value)
+                    this.isPristine = false
+                    this.selectedValue = value
+                }
+            }
         }
     },
     data() {
         return {
-            isPristine: true
+            isPristine: true,
+            selectedValue: 'Bitte auswählen',
+            initialValue: 'Bitte auswählen'
         }
+    },
+    mounted() {
+        this.preSelect()
+    },
+    updated() {
+        this.preSelect()
     }
 }
 </script>
