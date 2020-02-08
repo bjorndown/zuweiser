@@ -1,4 +1,6 @@
-import * as _ from 'lodash'
+import forOwn from 'lodash/forOwn'
+import isArray from 'lodash/isArray'
+import isString from 'lodash/isString'
 
 export class Course {
     private courseData: any
@@ -65,12 +67,12 @@ export class Student {
 export function mapRawToObjFields(rawObj, fields) {
     const obj = {}
     // TODO clean up
-    _.forOwn(fields, (value, key) => {
-        if (_.isString(value)) {
+    forOwn(fields, (value, key) => {
+        if (isString(value)) {
             obj[key] = rawObj[value]
-        } else if (_.isArray(value)) {
+        } else if (isArray(value)) {
             obj[key] = []
-            _.forOwn(value, (value2, key2) => {
+            forOwn(value, (value2, key2) => {
                 obj[key].push(rawObj[value2.column])
             })
         }

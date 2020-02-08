@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import * as _ from 'lodash'
+import omit from 'lodash/omit'
 
 export default {
     props: ['excelOverview'],
@@ -83,7 +83,7 @@ export default {
             }
         },
         notPriorities() {
-            return _.omit(this.participantsConfig.fields, 'priorities')
+            return omit(this.participantsConfig.fields, 'priorities')
         },
         removePriority(index) {
             this.participantsConfig.fields.priorities.splice(index, 1)

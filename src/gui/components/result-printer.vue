@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import * as _ from 'lodash'
+import range from 'lodash/range'
 
 export default {
     props: ['result'],
@@ -95,10 +95,10 @@ export default {
     },
     methods: {
         findUnmatched(participants) {
-            return _.filter(participants, (participant) => !participant.matched)
+            return participants.filter((participant) => !participant.matched)
         },
         numberOfPriorities(participants) {
-            return _.range(1, participants[0].priorities.length + 1)
+            return range(1, participants[0].priorities.length + 1)
         },
         getReason(shadow) {
             const reasons = []

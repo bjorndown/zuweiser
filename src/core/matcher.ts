@@ -1,4 +1,5 @@
-import * as _ from 'lodash'
+import find from 'lodash/find'
+import uniq from 'lodash/uniq'
 
 import { Course, Student } from './model'
 
@@ -44,7 +45,7 @@ export function match({ students, courses }) {
     while (currentPriorityIndex < totalNumOfPriorities) {
         students.forEach((student) => {
             const priorityToMatch = student.priorities[currentPriorityIndex]
-            const currentCourse = _.find(
+            const currentCourse = find(
                 courses,
                 (course) => course.id === priorityToMatch
             )
@@ -95,7 +96,7 @@ function assertActivityIdsAreUnique(courses) {
 function assertChoicesPerParticipantAreUnique(students) {
     students.forEach((student) => {
         const originalLength = student.priorities.length
-        const dedupedLength = _.uniq(student.priorities).length
+        const dedupedLength = uniq(student.priorities).length
         if (originalLength !== dedupedLength) {
             throw new NotUniqueError('Participant', 'priorities', student)
         }
@@ -106,7 +107,7 @@ function assertChosenActivitiesDoExist(students, courses) {
     const courseIds = courses.map((course) => course.id)
     students.forEach((student) => {
         student.priorities.forEach((priority) => {
-            if (!_.find(courseIds, (courseId) => courseId === priority)) {
+            if (!find(courseIds, (courseId) => courseId === priority)) {
                 throw new NotExistError('Activity', priority, student)
             }
         })

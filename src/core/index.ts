@@ -1,4 +1,4 @@
-import * as _ from 'lodash'
+import shuffle from 'lodash/shuffle'
 
 import { getRowsAsObjects } from './reader'
 import { convertCourse, convertStudent } from './model'
@@ -21,6 +21,6 @@ export function readStudents({ workbook, courses, config }) {
         convertStudent(rawStudent, config.student.fields)
     )
     // TODO add GUI option for shuffling
-    const shuffledStudents = _.shuffle(students)
+    const shuffledStudents = shuffle(students)
     return { workbook, students: shuffledStudents, courses, config }
 }
