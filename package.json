@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "",
-  "main": "src/main.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "format": "prettier --write '{tests,src}/**/*.{ts,vue}'"
+    "format": "prettier --write '**/*.{ts,vue}'"
   },
   "author": "dev@bjoern.mosler.ch",
   "license": "MIT",
@@ -25,7 +24,6 @@
     "@vue/cli-plugin-typescript": "4.2.2",
     "@vue/cli-plugin-unit-mocha": "4.2.2",
     "@vue/cli-service": "4.2.2",
-    "@vue/test-utils": "1.0.0-beta.31",
     "chai": "4.2.0",
     "expect.js": "latest",
     "prettier": "1.19.1",

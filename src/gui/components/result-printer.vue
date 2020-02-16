@@ -2,62 +2,78 @@
     <div id="results-root" v-if="result.courses">
         <div id="results-config">
             <h2>Resultat</h2>
-            <label for="printShadows">Schattenteilnehmer anzeigen</label>
-            <input id="printShadows" type="checkbox" v-model="printShadows" />
+        </div>
+        <div id="results-stats-left">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Total Teilnehmer</td>
+                    <td>{{ result.students.length }}</td>
+                </tr>
+                <tr>
+                    <td>Total Pl&auml;tze</td>
+                    <td>{{ result.courses.map(course => course.limit).reduce((partialSum, limit) => partialSum + limit) }}</td>
+                </tr>
+                <tr>
+                    <td>Total vergebene Plätze</td>
+                    <td>{{ result.students.filter(student => student.matched).length }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="results-stats-right">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Belegung</th>
+                    <th>Minimum</th>
+                    <th>Limit</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="course in result.courses">
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.students.length }}</td>
+                    <td>{{ course.minimum }}</td>
+                    <td>{{ course.limit }}</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
         <div id="results-successful">
             <ul>
                 <li v-for="course in result.courses">
-                    <h3>{{ course.name }}</h3>
+                    <h3>{{ buildActivityResultHeader(course) }}</h3>
                     <table>
                         <thead>
+                            <th>#</th>
                             <th></th>
                             <th></th>
                             <th></th>
                             <th>Priorität</th>
                         </thead>
                         <tbody>
-                            <tr v-for="student in course.students">
+                            <tr v-for="(student, index) in course.students">
+                                <td>{{ index + 1 }}</td>
                                 <td>{{ student.firstName }}</td>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.class }}</td>
                                 <td class="priority-column">
-                                    {{
-                                        student.priorities.indexOf(course.id) +
-                                            1
-                                    }}
+                                    {{ student.priorities.indexOf(course.id) + 1 }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <template v-if="printShadows">
-                        <h4>Schattenteilnehmer</h4>
-                        <table>
-                            <thead>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th>Priorität</th>
-                                <th>Grund</th>
-                            </thead>
-                            <tbody>
-                                <tr v-for="shadow in course.shadows">
-                                    <td>{{ shadow.student.firstName }}</td>
-                                    <td>{{ shadow.student.name }}</td>
-                                    <td>{{ shadow.student.class }}</td>
-                                    <td>{{ shadow.priority }}</td>
-                                    <td>{{ getReason(shadow) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </template>
                 </li>
             </ul>
         </div>
         <div id="results-unassignable">
             <h3>Nicht-zuweisbare Teilnehmer</h3>
+            <template v-if="findUnmatched(result.students).length > 0">
             <table>
                 <thead>
+                    <th>#</th>
                     <th />
                     <th />
                     <th />
@@ -66,19 +82,19 @@
                     </th>
                 </thead>
                 <tbody>
-                    <tr v-for="participant in findUnmatched(result.students)">
+                    <tr v-for="(participant, index) in findUnmatched(result.students)">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ participant.firstName }}</td>
                         <td>{{ participant.name }}</td>
                         <td>{{ participant.class }}</td>
-                        <td
-                            class="priority-column"
-                            v-for="priority in participant.priorities"
-                        >
-                            {{ priority }}
+                        <td v-for="priority in participant.priorities">
+                            {{ buildActivityResultHeader(result.courses.find(course => course.id === priority)) }}
                         </td>
                     </tr>
                 </tbody>
             </table>
+            </template>
+            <p v-else>Keine.</p>
         </div>
     </div>
 </template>
@@ -89,9 +105,7 @@ import range from 'lodash/range'
 export default {
     props: ['result'],
     data() {
-        return {
-            printShadows: false
-        }
+        return {}
     },
     methods: {
         findUnmatched(participants) {
@@ -100,14 +114,8 @@ export default {
         numberOfPriorities(participants) {
             return range(1, participants[0].priorities.length + 1)
         },
-        getReason(shadow) {
-            const reasons = []
-            if (shadow.wasAlreadyMatched) {
-                reasons.push('Bereits zugewiesen')
-            } else if (shadow.wasCourseFull) {
-                reasons.push('Aktivität voll')
-            }
-            return reasons.join(', ')
+        buildActivityResultHeader(activity) {
+            return `${activity.name } (${activity.students.length } / ${activity.limit })`
         }
     }
 }
@@ -116,7 +124,14 @@ export default {
 <style scoped>
 table {
     border-spacing: 0;
+    min-width: 350px;
+    max-width: 550px;
 }
+
+#results-unassignable table {
+    max-width: 800px;
+}
+
 table tr td,
 th {
     padding: 0.3em;
@@ -138,8 +153,10 @@ ul {
 
 #results-root {
     display: grid;
+    grid-template-columns: 450px auto;
     grid-template-areas:
         'config config'
+        'stats-left stats-right'
         'successful  unassignable';
 }
 
@@ -147,9 +164,18 @@ ul {
     grid-area: config;
 }
 
+#results-stats-right {
+    grid-area: stats-right;
+}
+
+#results-stats-left {
+    grid-area: stats-left;
+}
+
 #results-successful {
     grid-area: successful;
 }
+
 #results-unassignable {
     grid-area: unassignable;
 }

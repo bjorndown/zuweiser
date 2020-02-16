@@ -3,14 +3,12 @@ import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 
 export class Course {
-    private courseData: any
-    private students: any[]
-    private shadows: any[]
+    public students: Student[]
+    private courseData: any // TODO
 
     constructor(courseData) {
         this.courseData = courseData
         this.students = []
-        this.shadows = []
     }
 
     public get id() {
@@ -19,6 +17,10 @@ export class Course {
 
     public get limit() {
         return this.courseData.limit
+    }
+
+    public get minimum() {
+        return this.courseData.minimum ?? 0
     }
 
     public get name() {

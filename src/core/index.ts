@@ -20,7 +20,5 @@ export function readStudents({ workbook, courses, config }) {
     const students = rawStudents.map((rawStudent) =>
         convertStudent(rawStudent, config.student.fields)
     )
-    // TODO add GUI option for shuffling
-    const shuffledStudents = shuffle(students)
-    return { workbook, students: shuffledStudents, courses, config }
+    return { workbook, students, courses, config }
 }

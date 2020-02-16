@@ -5,7 +5,7 @@
         </am-excel-reader>
 
         <div v-if="excelOverview" id="sheet-config">
-            <h2 id="config-header">Blätter &amp; Spalten auswählen</h2>
+            <h2 id="config-header">Arbeitslätter &amp; Spalten auswählen</h2>
 
             <am-activities-sheet-config
                 id="config-activities"
@@ -85,7 +85,7 @@ select {
 #sheet-config {
     display: grid;
     grid-area: config;
-    grid-template-columns: 40% 60%;
+    grid-template-columns: 450px auto;
     grid-template-areas:
         'header header'
         'activities  participants';

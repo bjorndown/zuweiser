@@ -32,6 +32,7 @@ export default {
                 .then((result) => this.$emit('matched', result))
                 .catch((error) => {
                     this.errorMessage = translateException(error)
+                    throw error
                 })
         }
     }

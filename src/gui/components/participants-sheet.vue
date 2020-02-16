@@ -2,6 +2,12 @@
     <div>
         <h3>Teilnehmer</h3>
 
+        <label for="shuffleStudentsBeforeMatch">
+            Vor dem Zuweisen mischen
+            <Explanation text="Ohne Mischen ist die Reihenfolge der Einträge in der Tabelle massgebend, d.h. frühe Einträge werden bevorzugt"/>
+        </label>
+        <input type="checkbox" name="shuffleStudentsBeforeMatch" id="shuffleStudentsBeforeMatch" v-model="participantsConfig.shuffleBeforeMatch">
+
         <h4>Arbeitsblatt</h4>
         <am-multiselect
             v-model="participantsConfig.worksheet"
@@ -50,13 +56,16 @@
 
 <script>
 import omit from 'lodash/omit'
+import Explanation from '@/gui/components/explanation'
 
 export default {
+    components: {Explanation},
     props: ['excelOverview'],
     data() {
         return {
             participantsConfig: {
                 worksheet: '',
+                shuffleBeforeMatch: true,
                 fields: {
                     id: '',
                     name: '',
