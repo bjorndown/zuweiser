@@ -6,38 +6,53 @@
         <div id="results-stats-left">
             <table>
                 <tbody>
-                <tr>
-                    <td>Total Teilnehmer</td>
-                    <td>{{ result.students.length }}</td>
-                </tr>
-                <tr>
-                    <td>Total Pl&auml;tze</td>
-                    <td>{{ result.courses.map(course => course.limit).reduce((partialSum, limit) => partialSum + limit) }}</td>
-                </tr>
-                <tr>
-                    <td>Total vergebene Plätze</td>
-                    <td>{{ result.students.filter(student => student.matched).length }}</td>
-                </tr>
+                    <tr>
+                        <td>Total Teilnehmer</td>
+                        <td>{{ result.students.length }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Pl&auml;tze</td>
+                        <td>
+                            {{
+                                result.courses
+                                    .map((course) => course.limit)
+                                    .reduce(
+                                        (partialSum, limit) =>
+                                            partialSum + limit
+                                    )
+                            }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Total vergebene Plätze</td>
+                        <td>
+                            {{
+                                result.students.filter(
+                                    (student) => student.matched
+                                ).length
+                            }}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
         <div id="results-stats-right">
             <table>
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>Belegung</th>
-                    <th>Minimum</th>
-                    <th>Limit</th>
-                </tr>
+                    <tr>
+                        <th></th>
+                        <th>Belegung</th>
+                        <th>Minimum</th>
+                        <th>Limit</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr v-for="course in result.courses">
-                    <td>{{ course.name }}</td>
-                    <td>{{ course.students.length }}</td>
-                    <td>{{ course.minimum }}</td>
-                    <td>{{ course.limit }}</td>
-                </tr>
+                    <tr v-for="course in result.courses">
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.students.length }}</td>
+                        <td>{{ course.minimum }}</td>
+                        <td>{{ course.limit }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -60,7 +75,10 @@
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.class }}</td>
                                 <td class="priority-column">
-                                    {{ student.priorities.indexOf(course.id) + 1 }}
+                                    {{
+                                        student.priorities.indexOf(course.id) +
+                                            1
+                                    }}
                                 </td>
                             </tr>
                         </tbody>
@@ -71,28 +89,42 @@
         <div id="results-unassignable">
             <h3>Nicht-zuweisbare Teilnehmer</h3>
             <template v-if="findUnmatched(result.students).length > 0">
-            <table>
-                <thead>
-                    <th>#</th>
-                    <th />
-                    <th />
-                    <th />
-                    <th v-for="priority in numberOfPriorities(result.students)">
-                        Priorität {{ priority }}
-                    </th>
-                </thead>
-                <tbody>
-                    <tr v-for="(participant, index) in findUnmatched(result.students)">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ participant.firstName }}</td>
-                        <td>{{ participant.name }}</td>
-                        <td>{{ participant.class }}</td>
-                        <td v-for="priority in participant.priorities">
-                            {{ buildActivityResultHeader(result.courses.find(course => course.id === priority)) }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <table>
+                    <thead>
+                        <th>#</th>
+                        <th />
+                        <th />
+                        <th />
+                        <th
+                            v-for="priority in numberOfPriorities(
+                                result.students
+                            )"
+                        >
+                            Priorität {{ priority }}
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(participant, index) in findUnmatched(
+                                result.students
+                            )"
+                        >
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ participant.firstName }}</td>
+                            <td>{{ participant.name }}</td>
+                            <td>{{ participant.class }}</td>
+                            <td v-for="priority in participant.priorities">
+                                {{
+                                    buildActivityResultHeader(
+                                        result.courses.find(
+                                            (course) => course.id === priority
+                                        )
+                                    )
+                                }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </template>
             <p v-else>Keine.</p>
         </div>
@@ -115,7 +147,7 @@ export default {
             return range(1, participants[0].priorities.length + 1)
         },
         buildActivityResultHeader(activity) {
-            return `${activity.name } (${activity.students.length } / ${activity.limit })`
+            return `${activity.name} (${activity.students.length} / ${activity.limit})`
         }
     }
 }

@@ -3,9 +3,16 @@
         <h3>Aktivitäten</h3>
         <label for="shuffleActivitiesBeforeMatch">
             Vor dem Zuweisen mischen
-            <Explanation text="Ohne Mischen ist die Reihenfolge der Einträge in der Tabelle massgebend, d.h. frühe Einträge werden bevorzugt"/>
+            <Explanation
+                text="Ohne Mischen ist die Reihenfolge der Einträge in der Tabelle massgebend, d.h. frühe Einträge werden bevorzugt"
+            />
         </label>
-        <input type="checkbox" name="shuffleActivitiesBeforeMatch" id="shuffleActivitiesBeforeMatch" v-model="activitiesConfig.shuffleBeforeMatch">
+        <input
+            type="checkbox"
+            name="shuffleActivitiesBeforeMatch"
+            id="shuffleActivitiesBeforeMatch"
+            v-model="activitiesConfig.shuffleBeforeMatch"
+        />
         <h4>Arbeitsblatt</h4>
         <am-multiselect
             v-model="activitiesConfig.worksheet"
@@ -31,7 +38,7 @@
 <script>
 import Explanation from '@/gui/components/explanation'
 export default {
-    components: {Explanation},
+    components: { Explanation },
     props: ['excelOverview'],
     data() {
         return {

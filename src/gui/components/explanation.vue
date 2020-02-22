@@ -3,16 +3,16 @@
 </template>
 
 <script lang="ts">
-    export default {
-        props: ['text']
-    }
+export default {
+    props: ['text']
+}
 </script>
 
 <style scoped>
-    .explanation {
-        background: #add396;
-        padding: 0 5px;
-        font-weight: bold;
-        border-radius: 50%;
-    }
+.explanation {
+    background: #add396;
+    padding: 0 5px;
+    font-weight: bold;
+    border-radius: 50%;
+}
 </style>
