@@ -3,59 +3,7 @@
         <div id="results-config">
             <h2>Resultat</h2>
         </div>
-        <div id="results-stats-left">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Total Teilnehmer</td>
-                        <td>{{ result.students.length }}</td>
-                    </tr>
-                    <tr>
-                        <td>Total Pl&auml;tze</td>
-                        <td>
-                            {{
-                                result.courses
-                                    .map((course) => course.limit)
-                                    .reduce(
-                                        (partialSum, limit) =>
-                                            partialSum + limit
-                                    )
-                            }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Total vergebene Plätze</td>
-                        <td>
-                            {{
-                                result.students.filter(
-                                    (student) => student.matched
-                                ).length
-                            }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="results-stats-right">
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Belegung</th>
-                        <th>Minimum</th>
-                        <th>Limit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="course in result.courses">
-                        <td>{{ course.name }}</td>
-                        <td>{{ course.students.length }}</td>
-                        <td>{{ course.minimum }}</td>
-                        <td>{{ course.limit }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <Statistics :result="result" />
         <div id="results-successful">
             <ul>
                 <li v-for="course in result.courses">
@@ -115,11 +63,9 @@
                             <td>{{ participant.class }}</td>
                             <td v-for="priority in participant.priorities">
                                 {{
-                                    buildActivityResultHeader(
-                                        result.courses.find(
-                                            (course) => course.id === priority
-                                        )
-                                    )
+                                    result.courses.find(
+                                        (course) => course.id === priority
+                                    ).name
                                 }}
                             </td>
                         </tr>
@@ -133,8 +79,10 @@
 
 <script>
 import range from 'lodash/range'
+import Statistics from '@/gui/components/Statistics'
 
 export default {
+    components: { Statistics },
     props: ['result'],
     data() {
         return {}
@@ -169,12 +117,12 @@ th {
     padding: 0.3em;
 }
 
-table tr:nth-of-type(odd) {
-    background-color: #ccc;
+table tr:nth-of-type(even) {
+    background-color: #ddd;
 }
 
 .priority-column {
-    text-align: right;
+    text-align: center;
 }
 
 ul {
@@ -188,20 +136,13 @@ ul {
     grid-template-columns: 450px auto;
     grid-template-areas:
         'config config'
-        'stats-left stats-right'
-        'successful  unassignable';
+        'statistics statistics'
+        'unassignable unassignable'
+        'successful successful';
 }
 
 #results-config {
     grid-area: config;
-}
-
-#results-stats-right {
-    grid-area: stats-right;
-}
-
-#results-stats-left {
-    grid-area: stats-left;
 }
 
 #results-successful {
