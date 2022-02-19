@@ -1,354 +1,282 @@
-import find from 'lodash/find'
-import uniq from 'lodash/uniq'
 import range from 'lodash/range'
 import shuffle from 'lodash/shuffle'
+import {
+    ActivitiesConfig,
+    AssignableActivity,
+    AssignableParticipant,
+    createAssignableActivity,
+    createAssignableParticipant,
+    ParticipantsConfig,
+    validateModel
+} from './model'
 
-import { Course, Student } from './model'
-
-export class NotUniqueError extends Error {
-    public entityType: any
-    public propertyName: any
-    public entity: {}
-
-    constructor(entityType, propertyName, entity = {}) {
-        super(`${propertyName} not unique for entity ${entityType}`)
-        Object.setPrototypeOf(this, NotUniqueError.prototype)
-        this.entityType = entityType
-        this.propertyName = propertyName
-        this.entity = entity
-    }
+type FillToMinimumConfiguration = {
+    readonly priority: number
+    readonly index: number
 }
 
-export class NotExistError extends Error {
-    public entityType: any
-    public id: any
-    public referrer: {}
-
-    constructor(entityType, id, referrer = {}) {
-        super(
-            `${entityType} with id=${id} does not exist. Referred to by ${referrer}.`
-        )
-        Object.setPrototypeOf(this, NotExistError.prototype)
-        this.entityType = entityType
-        this.id = id
-        this.referrer = referrer
-    }
+export type MatchResult = {
+    participants: AssignableParticipant[]
+    activities: AssignableActivity[]
 }
 
-export const getStudentsInPriorityOrder = (
-    students: Student[],
-    course: Course,
-    totalNumOfPriorities: number
-): Student[][] => {
-    const studentsByPriority: Student[][] = range(
-        totalNumOfPriorities
-    ).map(() => [])
+export function match(
+    participantsConfig: ParticipantsConfig,
+    activitiesConfig: ActivitiesConfig
+): MatchResult {
+    validateModel(participantsConfig.participants, activitiesConfig.activities)
 
-    for (const student of students) {
-        studentsByPriority.forEach((priority, index) => {
-            if (student.priorities[index] === course.id) {
-                studentsByPriority[index].push(student)
-            }
-        })
-    }
+    const participantsToMatch = (
+        participantsConfig.shuffleBeforeMatch
+            ? shuffle(participantsConfig.participants)
+            : participantsConfig.participants
+    ).map((participant) => createAssignableParticipant(participant))
+    const activitiesToMatch = (
+        activitiesConfig.shuffleBeforeMatch
+            ? shuffle(activitiesConfig.activities)
+            : activitiesConfig.activities
+    ).map((activity) => createAssignableActivity(activity))
 
-    return studentsByPriority
+    tryToMatch(participantsToMatch, activitiesToMatch)
+
+    return { participants: participantsToMatch, activities: activitiesToMatch }
 }
 
-const getUnmatchedStudents = (students: Student[]): Student[] => {
-    return students.filter((student) => !student.matched)
-}
-
-const getCoursesWithMinimumReached = (courses: Course[]): Course[] => {
-    return courses.filter((course) => course.students.length >= course.minimum)
-}
-
-const getAssignableCourses = (courses: Course[]): Course[] => {
-    return courses.filter((course) => course.limit > 0)
-}
-
-interface FillToMinimumConfiguration {
-    priority: number
-    index: number
-}
-
-export const getMinimalPriorityToFillToMinimum = (
-    course: Course,
-    studentsInOrder: Student[][],
-    totalNumPriorities: number
-): FillToMinimumConfiguration => {
-    let currentPriority = 0
-    const assignedStudents: Student[] = []
-    const studentsInOrderCopy = studentsInOrder.map((students) =>
-        students.slice(0)
-    )
-    while (
-        assignedStudents.length < course.minimum &&
-        studentsInOrderCopy.flat().length > 0 &&
-        currentPriority < totalNumPriorities
-    ) {
-        if (
-            studentsInOrderCopy[currentPriority].length === 0 &&
-            currentPriority < totalNumPriorities
-        ) {
-            currentPriority = currentPriority + 1
-        }
-
-        assignedStudents.push(
-            studentsInOrderCopy[currentPriority].shift() as Student
-        )
-
-        if (
-            studentsInOrderCopy.flat().length === 0 &&
-            assignedStudents.length < course.minimum
-        ) {
-            return { priority: -1, index: -1 }
-        }
-
-        if (assignedStudents.length === course.minimum) {
-            break
-        }
-    }
-    const index =
-        studentsInOrder[currentPriority].length -
-        studentsInOrderCopy[currentPriority].length -
-        1
-    return { priority: currentPriority, index }
-}
-
-export const tryToFillToMinimum = (
-    course: Course,
-    studentsInOrder: Student[][],
-    minimalPriority: FillToMinimumConfiguration
+const tryToMatch = (
+    participants: AssignableParticipant[],
+    activities: AssignableActivity[]
 ): void => {
-    for (const priority of range(minimalPriority.priority)) {
-        for (const index of range(studentsInOrder[priority].length)) {
-            const student = studentsInOrder[priority].shift() as Student
-            if (!student.matched) {
-                course.students.push(student)
-                student.matched = true
-            } else {
-                console.warn(`${student.name} already matched!!`)
-            }
-        }
-    }
-    for (const index of range(minimalPriority.index + 1)) {
-        const student = studentsInOrder[
-            minimalPriority.priority
-        ].shift() as Student
-        if (!student.matched) {
-            course.students.push(student)
-            student.matched = true
-        } else {
-            console.warn(`${student.name} already matched!!`)
-        }
-    }
-}
+    const assignableActivities = getAssignableActivities(activities)
+    const totalNumPriorities = participants[0].priorities.length // TODO FIXME
 
-export const sortByDeltaToMinimum = (courses: Course[]): Course[] => {
-    return courses.sort((course1, course2) => {
-        const delta1 = course1.minimum - course1.students.length
-        const delta2 = course2.minimum - course2.students.length
-        return delta2 - delta1
-    })
-}
-
-const sortByUnmatchedPriorities = (
-    courses: Course[],
-    students: Student[],
-    totalNumOfPriorities: number
-): Course[] => {
-    return courses.sort((course1, course2) => {
-        for (const priority of range(totalNumOfPriorities)) {
-            const studentsInOrder1 = getStudentsInPriorityOrder(
-                students,
-                course1,
-                totalNumOfPriorities
-            )
-            const studentsInOrder2 = getStudentsInPriorityOrder(
-                students,
-                course2,
-                totalNumOfPriorities
-            )
-            if (
-                getUnmatchedStudents(studentsInOrder2[priority]).length >
-                getUnmatchedStudents(studentsInOrder1[priority]).length
-            ) {
-                return 1
-            } else if (
-                getUnmatchedStudents(studentsInOrder1[priority]).length >
-                getUnmatchedStudents(studentsInOrder2[priority]).length
-            ) {
-                return -1
-            }
-        }
-        return 0
-    })
-}
-
-const analysePriorities = ({ students, courses, config }: Context) => {
-    const assignableCourses = getAssignableCourses(courses)
-    for (const course of assignableCourses) {
-        const studentsInOrder = getStudentsInPriorityOrder(
-            students,
-            course,
-            config.student.fields.priorities.length
+    for (const activity of assignableActivities) {
+        const participantsInOrder = getParticipantsInPriorityOrder(
+            participants,
+            activity,
+            totalNumPriorities
         )
-        console.log(course.name)
+        console.log(activity.title)
         const minimalPriority = getMinimalPriorityToFillToMinimum(
-            course,
-            studentsInOrder,
-            config.student.fields.priorities.length
+            activity,
+            participantsInOrder,
+            totalNumPriorities
         )
         console.log(
-            `Minimal priority to fill to minimum ${minimalPriority.priority +
-                1}, index ${minimalPriority.index}`
+            `Minimal priority to fill to minimum ${
+                minimalPriority.priority + 1
+            }, index ${minimalPriority.index}`
         )
-        for (const priority of range(config.student.fields.priorities.length)) {
+        for (const priority of range(totalNumPriorities)) {
             console.log(
-                `Prio ${priority + 1}: ${studentsInOrder[priority].length}`
+                `Prio ${priority + 1}: ${participantsInOrder[priority].length}`
             )
         }
-        tryToFillToMinimum(course, studentsInOrder, minimalPriority)
+        tryToFillToMinimum(activity, participantsInOrder, minimalPriority)
     }
 
     console.log('Second round')
 
-    for (const course of sortByDeltaToMinimum(assignableCourses)) {
-        const studentsInOrder = getStudentsInPriorityOrder(
-            students,
-            course,
-            config.student.fields.priorities.length
+    for (const activity of sortByDeltaToMinimum(assignableActivities)) {
+        const participantsInOrder = getParticipantsInPriorityOrder(
+            participants,
+            activity,
+            totalNumPriorities
         )
-        const delta = course.minimum - course.students.length
-        const studentsFlat = studentsInOrder.flat()
+        const delta = activity.minimum - activity.participants.length
+        const participantsFlat = participantsInOrder.flat()
 
-        console.log(`Try to fill delta ${delta} for ${course.name}`)
+        console.log(`Try to fill delta ${delta} for ${activity.title}`)
 
         while (
-            studentsFlat.length > 0 &&
-            course.minimum - course.students.length > 0
+            participantsFlat.length > 0 &&
+            activity.minimum - activity.participants.length > 0
         ) {
-            const student = studentsFlat.shift() as Student
-            if (!student.matched) {
-                course.students.push(student)
-                student.matched = true
+            const participant = participantsFlat.shift()
+            if (!participant.assigned && activity.isNotFull()) {
+                activity.assignParticipant(participant)
+                participant.assigned = true
             } else {
-                console.warn(`${student.name} already matched!!`)
+                console.warn(`${participant.id} already matched!!`)
             }
         }
     }
 
     console.log('final round')
 
-    for (const course of sortByUnmatchedPriorities(
-        assignableCourses,
-        students,
-        config.student.fields.priorities.length
+    for (const activity of sortByUnmatchedPriorities(
+        assignableActivities,
+        participants,
+        totalNumPriorities
     )) {
-        console.log(course.name)
-        const studentsInOrder = getStudentsInPriorityOrder(
-            students,
-            course,
-            config.student.fields.priorities.length
+        console.log(activity.title)
+        const participantsInOrder = getParticipantsInPriorityOrder(
+            participants,
+            activity,
+            totalNumPriorities
         )
-        for (const priority of range(config.student.fields.priorities.length)) {
-            for (const index of range(studentsInOrder[priority].length)) {
-                const student = studentsInOrder[priority].shift() as Student
-                if (!student.matched && course.students.length < course.limit) {
-                    course.students.push(student)
-                    student.matched = true
+        for (const priority of range(totalNumPriorities)) {
+            for (const index of range(participantsInOrder[priority].length)) {
+                const participant = participantsInOrder[priority].shift()
+                if (!participant.assigned && activity.isNotFull()) {
+                    activity.assignParticipant(participant)
+                    participant.assigned = true
                 } else {
-                    console.warn(`${student.name} already matched!!`)
+                    console.warn(`${participant.id} already matched!!`)
                 }
             }
         }
     }
 }
 
-interface Context {
-    students: Student[]
-    courses: Course[]
-    config: WorksheetConfig
-}
+const getAssignableActivities = (
+    activities: AssignableActivity[]
+): AssignableActivity[] => activities.filter((activity) => activity.limit > 0)
 
-export interface WorksheetConfig {
-    student: {
-        shuffleBeforeMatch: boolean
-        fields: {
-            priorities: number[]
-        }
-    }
-    courses: {
-        shuffleBeforeMatch: boolean
-    }
-}
+export const getParticipantsInPriorityOrder = (
+    participants: AssignableParticipant[],
+    activity: AssignableActivity,
+    totalNumOfPriorities: number
+): AssignableParticipant[][] => {
+    const participantsByPriority: AssignableParticipant[][] = range(
+        totalNumOfPriorities
+    ).map(() => [])
 
-export function match({ students, courses, config }) {
-    sanityCeck({ students, courses, config })
-
-    const studentsToMatch = config.student.shuffleBeforeMatch
-        ? shuffle(students)
-        : students
-    const coursesToMatch = config.courses.shuffleBeforeMatch
-        ? getAssignableCourses(shuffle(courses))
-        : getAssignableCourses(courses)
-
-    analysePriorities({
-        students: studentsToMatch,
-        courses: coursesToMatch,
-        config
-    })
-
-    return { students, courses, config }
-}
-
-export function assertParticipantsIdsAreUnique(students) {
-    const idSet = new Set()
-    students.forEach((student) => {
-        if (idSet.has(student.id)) {
-            throw new NotUniqueError('Participant', 'id', new Student({}))
-        } else {
-            idSet.add(student.id)
-        }
-    })
-}
-
-export function assertActivityIdsAreUnique(courses) {
-    const idSet = new Set()
-    courses.forEach((course) => {
-        if (idSet.has(course.id)) {
-            throw new NotUniqueError('Activity', 'id', new Course({}))
-        } else {
-            idSet.add(course.id)
-        }
-    })
-}
-
-export function assertChoicesPerParticipantAreUnique(students) {
-    students.forEach((student) => {
-        const originalLength = student.priorities.length
-        const dedupedLength = uniq(student.priorities).length
-        if (originalLength !== dedupedLength) {
-            throw new NotUniqueError('Participant', 'priorities', student)
-        }
-    })
-}
-
-export function assertChosenActivitiesDoExist(students, courses) {
-    const courseIds = courses.map((course) => course.id)
-    students.forEach((student) => {
-        student.priorities.forEach((priority) => {
-            if (!find(courseIds, (courseId) => courseId === priority)) {
-                throw new NotExistError('Activity', priority, student)
+    for (const participant of participants) {
+        participantsByPriority.forEach((priority, index) => {
+            if (participant.priorities[index] === activity.id) {
+                participantsByPriority[index].push(participant)
             }
         })
+    }
+
+    return participantsByPriority
+}
+
+const getUnmatchedParticipants = (
+    participants: AssignableParticipant[]
+): AssignableParticipant[] =>
+    participants.filter((participant) => !participant.assigned)
+
+const getActivitiesWithMinimumReached = (
+    activities: AssignableActivity[]
+): AssignableActivity[] =>
+    activities.filter(
+        (activity) => activity.participants.length >= activity.minimum
+    )
+
+export const getMinimalPriorityToFillToMinimum = (
+    activity: AssignableActivity,
+    participantsInOrder: AssignableParticipant[][],
+    totalNumPriorities: number
+): FillToMinimumConfiguration => {
+    let currentPriority = 0
+    const assignedParticipants: AssignableParticipant[] = []
+    const participantsInOrderCopy = participantsInOrder.map((participants) =>
+        participants.slice(0)
+    )
+    while (
+        assignedParticipants.length < activity.minimum &&
+        participantsInOrderCopy.flat().length > 0 &&
+        currentPriority < totalNumPriorities
+    ) {
+        if (
+            participantsInOrderCopy[currentPriority].length === 0 &&
+            currentPriority < totalNumPriorities
+        ) {
+            currentPriority = currentPriority + 1
+        }
+
+        assignedParticipants.push(
+            participantsInOrderCopy[currentPriority].shift()
+        )
+
+        if (
+            participantsInOrderCopy.flat().length === 0 &&
+            assignedParticipants.length < activity.minimum
+        ) {
+            return { priority: -1, index: -1 }
+        }
+
+        if (assignedParticipants.length === activity.minimum) {
+            break
+        }
+    }
+    const index =
+        participantsInOrder[currentPriority].length -
+        participantsInOrderCopy[currentPriority].length -
+        1
+    return { priority: currentPriority, index }
+}
+
+export const tryToFillToMinimum = (
+    activity: AssignableActivity,
+    participantsInOrder: AssignableParticipant[][],
+    minimalPriority: FillToMinimumConfiguration
+): void => {
+    for (const priority of range(minimalPriority.priority)) {
+        for (const index of range(participantsInOrder[priority].length)) {
+            const participant = participantsInOrder[priority].shift()
+            if (!participant.assigned && activity.isNotFull()) {
+                activity.assignParticipant(participant)
+                participant.assigned = true
+            } else {
+                console.warn(`${participant.id} already matched!!`)
+            }
+        }
+    }
+    for (const index of range(minimalPriority.index + 1)) {
+        const participant =
+            participantsInOrder[minimalPriority.priority].shift()
+        if (!participant.assigned && activity.isNotFull()) {
+            activity.assignParticipant(participant)
+            participant.assigned = true
+        } else {
+            console.warn(`${participant.id} already matched!!`)
+        }
+    }
+}
+
+export const sortByDeltaToMinimum = (
+    activities: AssignableActivity[]
+): AssignableActivity[] => {
+    return activities.sort((activity1, activity2) => {
+        const delta1 = activity1.minimum - activity1.participants.length
+        const delta2 = activity2.minimum - activity2.participants.length
+        return delta2 - delta1
     })
 }
 
-export const sanityCeck = ({ students, courses }: Context) => {
-    assertActivityIdsAreUnique(courses)
-    assertParticipantsIdsAreUnique(students)
-    assertChosenActivitiesDoExist(students, courses)
-    assertChoicesPerParticipantAreUnique(students)
+const sortByUnmatchedPriorities = (
+    activities: AssignableActivity[],
+    participants: AssignableParticipant[],
+    totalNumOfPriorities: number
+): AssignableActivity[] => {
+    return activities.sort((activity1, activity2) => {
+        for (const priority of range(totalNumOfPriorities)) {
+            const participantsInOrder1 = getParticipantsInPriorityOrder(
+                participants,
+                activity1,
+                totalNumOfPriorities
+            )
+            const participantsInOrder2 = getParticipantsInPriorityOrder(
+                participants,
+                activity2,
+                totalNumOfPriorities
+            )
+            if (
+                getUnmatchedParticipants(participantsInOrder2[priority])
+                    .length >
+                getUnmatchedParticipants(participantsInOrder1[priority]).length
+            ) {
+                return 1
+            } else if (
+                getUnmatchedParticipants(participantsInOrder1[priority])
+                    .length >
+                getUnmatchedParticipants(participantsInOrder2[priority]).length
+            ) {
+                return -1
+            }
+        }
+        return 0
+    })
 }

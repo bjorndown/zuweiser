@@ -1,93 +1,175 @@
-import forOwn from 'lodash/forOwn'
-import isArray from 'lodash/isArray'
-import isString from 'lodash/isString'
+export type ActivitiesConfig = {
+    readonly activities: Activity[]
+    readonly shuffleBeforeMatch: boolean
+}
 
-export class Course {
-    public students: Student[]
-    private courseData: any // TODO
+export type ParticipantsConfig = {
+    readonly participants: Participant[]
+    readonly shuffleBeforeMatch: boolean
+}
 
-    constructor(courseData) {
-        this.courseData = courseData
-        this.students = []
-    }
+export type Activity = {
+    readonly id: string
+    readonly title: string
+    readonly limit: number
+    readonly minimum: number
+}
 
-    public get id() {
-        return this.courseData.id
-    }
+export type Participant = {
+    readonly id: string
+    readonly priorities: string[]
+}
 
-    public get limit() {
-        return this.courseData.limit
-    }
+type ActivityMixin = {
+    readonly participants: Readonly<readonly Participant[]>
+    assignParticipant(participant: AssignableParticipant): void
+    isNotFull(): boolean
+}
 
-    public get minimum() {
-        return this.courseData.minimum ?? 0
-    }
+type ParticipantMixin = {
+    readonly _assigned: boolean
+    assigned: boolean
+}
 
-    public get name() {
-        return this.courseData.name
-    }
+export type AssignableActivity = Activity & ActivityMixin
+export type AssignableParticipant = Participant & ParticipantMixin
 
-    public toString() {
-        return this.name
+type EntityTypes = 'Participant' | 'Activity'
+
+export const createAssignableActivity = (
+    activity: Activity
+): AssignableActivity => {
+    return {
+        ...activity,
+        assignParticipant(participant: AssignableParticipant) {
+            if (this.participants.length < this.limit) {
+                this.participants.push(participant)
+            } else {
+                throw new Error(`Activity title="${this.title} is full`)
+            }
+        },
+        isNotFull() {
+            return this.participants.length < this.limit
+        },
+        participants: []
     }
 }
 
-export class Student {
-    public matched: boolean
-    private studentData: any
-
-    constructor(studentData) {
-        this.studentData = studentData
-        this.matched = false
-    }
-
-    public get id() {
-        return this.studentData.id
-    }
-
-    public get priorities() {
-        return this.studentData.priorities
-    }
-
-    public get name() {
-        return this.studentData.name
-    }
-
-    public get firstName() {
-        return this.studentData.firstName
-    }
-
-    public get class() {
-        return this.studentData.class
-    }
-
-    public toString() {
-        return this.firstName + ' ' + this.name
+export const createAssignableParticipant = (
+    participant: Participant
+): AssignableParticipant => {
+    return {
+        ...participant,
+        _assigned: false,
+        set assigned(assigned: boolean) {
+            if (this._assigned && assigned) {
+                throw Error(`Participant ${this.id} already assigned`)
+            }
+            this._assigned = assigned
+        },
+        get assigned(): boolean {
+            return this._assigned
+        }
     }
 }
 
-export function mapRawToObjFields(rawObj, fields) {
-    const obj = {}
-    // TODO clean up
-    forOwn(fields, (value, key) => {
-        if (isString(value)) {
-            obj[key] = rawObj[value]
-        } else if (isArray(value)) {
-            obj[key] = []
-            forOwn(value, (value2, key2) => {
-                obj[key].push(rawObj[value2.column])
-            })
+export class NotUniqueError extends Error {
+    constructor(
+        public entityType: EntityTypes,
+        public entityId: string,
+        public propertyName: string,
+        public propertyValue: string | number
+    ) {
+        super(
+            `${propertyName}=${propertyValue} not unique for ${entityType} with id=${entityId}`
+        )
+        Object.setPrototypeOf(this, NotUniqueError.prototype)
+    }
+}
+
+export class NotExistError extends Error {
+    constructor(
+        public entityType: EntityTypes,
+        public id: string,
+        public referrerType: EntityTypes,
+        public referrerId: string
+    ) {
+        super(
+            `${entityType} with id=${id} does not exist. Referred to by ${referrerType} with id=${referrerId}`
+        )
+        Object.setPrototypeOf(this, NotExistError.prototype)
+    }
+}
+
+export const validateModel = (
+    participants: Participant[],
+    activities: Activity[]
+): void => {
+    assertUniqueActivityIds(activities)
+    assertUniqueParticipantsIds(participants)
+    assertUniquePrioritiesPerParticipant(participants)
+    assertPrioritiesDoExist(participants, activities)
+}
+
+export function assertUniqueParticipantsIds(participants: Participant[]) {
+    const idSet = new Set()
+    participants.forEach((participant) => {
+        if (idSet.has(participant.id)) {
+            throw new NotUniqueError(
+                'Participant',
+                participant.id,
+                'id',
+                participant.id
+            )
+        } else {
+            idSet.add(participant.id)
         }
     })
-    return obj
 }
 
-export function convertStudent(rawStudent, studentFields) {
-    const studentData = mapRawToObjFields(rawStudent, studentFields)
-    return new Student(studentData)
+export function assertUniqueActivityIds(activities: Activity[]) {
+    const idSet = new Set()
+    activities.forEach((activity) => {
+        if (idSet.has(activity.id)) {
+            throw new NotUniqueError('Activity', activity.id, 'id', activity.id)
+        } else {
+            idSet.add(activity.id)
+        }
+    })
 }
 
-export function convertCourse(rawCourse, courseFields) {
-    const courseData = mapRawToObjFields(rawCourse, courseFields)
-    return new Course(courseData)
+export function assertUniquePrioritiesPerParticipant(
+    participants: Participant[]
+) {
+    participants.forEach((participant) => {
+        const originalLength = participant.priorities.length
+        const deduplicatedLength = new Set(participant.priorities).size
+        if (originalLength !== deduplicatedLength) {
+            throw new NotUniqueError(
+                'Participant',
+                participant.id,
+                'priorities',
+                participant.priorities.toString()
+            )
+        }
+    })
+}
+
+export function assertPrioritiesDoExist(
+    participants: Participant[],
+    activities: Activity[]
+) {
+    const activityIds = activities.map((activity) => activity.id)
+    participants.forEach((participant) => {
+        participant.priorities.forEach((priority) => {
+            if (!activityIds.find((activityId) => activityId === priority)) {
+                throw new NotExistError(
+                    'Activity',
+                    priority,
+                    'Participant',
+                    participant.id
+                )
+            }
+        })
+    })
 }
