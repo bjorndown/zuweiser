@@ -1,1 +1,0 @@
-:root{--green:#add396;--gray:#ddd;--light-gray:#eee}*{font-family:sans-serif}td,th{padding:.5rem;border:thin solid var(--gray)}table{border-collapse:collapse}th{text-align:left;background:var(--gray)}table tr:nth-of-type(2n){background-color:var(--light-gray)}textarea{font-family:monospace}
