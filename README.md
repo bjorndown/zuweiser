@@ -1,54 +1,45 @@
-# activity-matcher
-## What does it do?!
-It is a common scenario in schools, companies etc to have an event/project week etc where 
-people can take part in various activities. The number of people that can take part in an activity is (usually) limited.
-So organizers get the people to let them know their priorities/preferences regarding the activities they want to participate in.
-Then, in the worst case, somebody manually matches activities and participants according to their preferences. 
-
-That last step is where activity-matcher comes in: 
-
-Given that you feed it an Excel file containing two worksheets (activites and participants, details see below) it takes care of 
-matching participants and activities and shows you the result. 
+# Zuweiser
 
 ## Screenshot
+
 <a href="doc/demo.png">
     <img src="doc/demo.png" alt="Demo screenshot" style="width: 300px;"/>
 </a>
 
-## Prerequisites, i.e. how does the Excel file look like?
+## What does it do?!
 
-activity-matcher expects an Excel file containing two worksheets:
+Schools, companies etc often organize events where people can take part in various activities. The number participants
+per activity is usually limited. Therefore organizers get people specify their priorities regarding the activities they
+want to participate in. Then participants must be assigned to their activities according to their priorities.
 
-*NOTE: naming of worksheets and columns is not important*
+Zuweiser takes care of that last step.
 
-Activities, with the following columns:
-- ID
-- Name
+## Format
+
+Zuweiser consumes tab-spaced text as produced by Excel and Libre-Office when copying the contents of a worksheet
+with `Ctrl+A` `Ctrl+C`
+
+Activities must contain the following columns
+
+- ID (letters or numbers)
+- Title
 - Maximum number of participants
+- Minimum number of participants
 
-Participants, with the following columns:
-- ID
-- Name 
-- Firstname
-- Class (for now, at least)
-- n priorities (referring to activities using their ID)
+Participants must contain the following columns:
 
-## Build and run it yourself
-In order to run it locally run
+- ID (letters or numbers)
+- N columns of priorities, referring to activities using their ID
+
+Additional columns in the participant's data will be included in the result.
+
+## Run locally
+
 ```
 yarn
-```
-and then either
-```
-yarn run dev-server
-```
-or if you are running docker:
-```
-sh build.sh && sh deploy.sh
+yarn dev
 ```
 
 ## Built with
-- [js-xlsx](https://github.com/SheetJS/js-xlsx)
-- [vue.js](https://github.com/vuejs/vue)
-- [webpack](https://github.com/webpack/webpack)
-- [babel](https://github.com/babel/babel)
+
+[Next.js](https://nextjs.org/blog)
