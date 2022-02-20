@@ -39,41 +39,37 @@ const Index = () => {
     return (
         <>
             <h1>Zuweiser</h1>
-            <Activities onChange={setActivitiesConfig} />
-            <Participants onChange={setParticipantsConfig} />
-            {ready && <button onClick={compute}>Prioritäten auflösen</button>}
+            <div id="config">
+                <Activities onChange={setActivitiesConfig} />
+                <Participants onChange={setParticipantsConfig} />
+            </div>
+            {ready && (
+                <button className="matchButton" onClick={compute}>
+                    Prioritäten auflösen
+                </button>
+            )}
             {result && (
                 <Results result={result} participantsData={participantsData} />
             )}
 
             <style jsx>{`
-                label {
-                    margin-right: 1em;
+                @media screen and (min-width: 500px) {
+                    #config {
+                        flex-flow: column wrap;
+                    }
                 }
 
-                select {
-                    margin-bottom: 0.6em;
+                #config {
+                    display: flex;
+                    flex-flow: row wrap;
+                    justify-content: flex-start;
+                    column-gap: 1rem;
                 }
 
-                #sheet-config {
-                    display: grid;
-                    grid-area: config;
-                    grid-template-columns: 450px auto;
-                    grid-template-areas:
-                        'header header'
-                        'activities  participants';
-                }
-
-                #config-header {
-                    grid-area: header;
-                }
-
-                #config-activities {
-                    grid-area: activities;
-                }
-
-                #config-participants {
-                    grid-area: participants;
+                .matchButton {
+                    margin-top: 1rem;
+                    padding: 0.5rem;
+                    font-size: larger;
                 }
             `}</style>
         </>

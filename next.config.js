@@ -1,3 +1,3 @@
 module.exports = {
-    basePath: '/zuweiser',
+    basePath: process.env.NODE_ENV === 'production' ? '/zuweiser' : '',
 }

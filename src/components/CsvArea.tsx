@@ -23,7 +23,7 @@ export const CsvArea: FunctionComponent<Props> = ({ onChange }) => {
     return (
         <div className="container">
             <textarea
-                cols={80}
+                className="input"
                 rows={20}
                 onChange={(event) => onChange(parse(event.target.value))}
             />
@@ -33,6 +33,9 @@ export const CsvArea: FunctionComponent<Props> = ({ onChange }) => {
                     flex-flow: column wrap;
                     margin: 1rem 0;
                 }
+  .input {
+  max-width: 700px;
+  }
             `}</style>
         </div>
     )

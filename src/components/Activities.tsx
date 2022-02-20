@@ -146,7 +146,7 @@ export const Activities = ({ onChange }: Props) => {
     }, [error, activities, shuffleBeforeMatch])
 
     return (
-        <div>
+        <div className="container">
             <h2>Aktivitäten</h2>
             <input
                 type="checkbox"
@@ -161,6 +161,12 @@ export const Activities = ({ onChange }: Props) => {
             </label>
             <CsvArea onChange={(table) => setTable(table)} />
             <Preview error={error} columns={columns} table={table} />
+            <style jsx>{`
+              .container {
+              min-width: 400px;
+              flex: 1
+              }
+            `}</style>
         </div>
     )
 }

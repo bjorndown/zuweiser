@@ -133,7 +133,7 @@ export const Participants = ({ onChange }: Props) => {
     }, [error, participants, participantsData, shuffleBeforeMatch])
 
     return (
-        <div>
+        <div className="container">
             <h2>Teilnehmer</h2>
 
             <input
@@ -148,6 +148,12 @@ export const Participants = ({ onChange }: Props) => {
             </label>
             <CsvArea onChange={(table) => setTable(table)} />
             <Preview error={error} columns={columns} table={table} />
+            <style jsx>{`
+                .container {
+                    min-width: 500px;
+                    flex: 1;
+                }
+            `}</style>
         </div>
     )
 }
