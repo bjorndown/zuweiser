@@ -1,5 +1,5 @@
 import { createAssignableActivity, createAssignableParticipant } from './model'
-import {match} from './matcher'
+import { match } from './matcher'
 
 describe('AssignableActivity', () => {
     describe('assignParticipant', () => {
@@ -62,7 +62,6 @@ describe('AssignableActivity', () => {
     })
 })
 
-
 describe('AssignableParticipant', () => {
     describe('assigned setter', () => {
         it('must throw error if already assigned and is about to be assigned again', () => {
@@ -73,7 +72,9 @@ describe('AssignableParticipant', () => {
 
             participant1.assigned = true
 
-            expect(() => participant1.assigned = true).toThrowError(/already assigned/)
+            expect(() => (participant1.assigned = true)).toThrowError(
+                /already assigned/
+            )
         })
         it('must allow to unassign', () => {
             const participant1 = createAssignableParticipant({
@@ -91,9 +92,18 @@ describe('AssignableParticipant', () => {
 
 describe('validateModel', () => {
     it('should fail if participants ids are not unique', () => {
-        const participant1 = createAssignableParticipant({ priorities: [], id: '1' })
-        const participant2 = createAssignableParticipant({ priorities: [], id: '1' })
-        const participant3 = createAssignableParticipant({ priorities: [], id: '3' })
+        const participant1 = createAssignableParticipant({
+            priorities: [],
+            id: '1'
+        })
+        const participant2 = createAssignableParticipant({
+            priorities: [],
+            id: '1'
+        })
+        const participant3 = createAssignableParticipant({
+            priorities: [],
+            id: '3'
+        })
 
         expect(() =>
             match(
@@ -107,9 +117,24 @@ describe('validateModel', () => {
     })
 
     it('should fail if activity ids are not unique', () => {
-        const activity1 = createAssignableActivity({ id: '1', title: '', minimum: 0, limit: 0})
-        const activity2 = createAssignableActivity({  id: '1', title: '', minimum: 0, limit: 0 })
-        const activity3 = createAssignableActivity({  id: '2', title: '', minimum: 0, limit: 0 })
+        const activity1 = createAssignableActivity({
+            id: '1',
+            title: '',
+            minimum: 0,
+            limit: 0
+        })
+        const activity2 = createAssignableActivity({
+            id: '1',
+            title: '',
+            minimum: 0,
+            limit: 0
+        })
+        const activity3 = createAssignableActivity({
+            id: '2',
+            title: '',
+            minimum: 0,
+            limit: 0
+        })
 
         expect(() =>
             match(
@@ -126,7 +151,10 @@ describe('validateModel', () => {
     })
 
     it('should fail if chosen activity does not exist', () => {
-        const participant1 = createAssignableParticipant({ priorities: ['2'], id: '1' })
+        const participant1 = createAssignableParticipant({
+            priorities: ['2'],
+            id: '1'
+        })
         const activity1 = createAssignableActivity({
             id: '1',
             title: 'activity 1',
@@ -157,8 +185,14 @@ describe('validateModel', () => {
     })
 
     it('should fail if choices per participant are not unique', () => {
-        const participant1 = createAssignableParticipant({ priorities: ['1', '1'], id: '1' })
-        const participant2 = createAssignableParticipant({ priorities: ['1', '2'], id: '2' })
+        const participant1 = createAssignableParticipant({
+            priorities: ['1', '1'],
+            id: '1'
+        })
+        const participant2 = createAssignableParticipant({
+            priorities: ['1', '2'],
+            id: '2'
+        })
         const activity1 = createAssignableActivity({
             id: '1',
             title: 'activity 1',

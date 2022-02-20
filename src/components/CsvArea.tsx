@@ -17,7 +17,7 @@ export const CsvArea: FunctionComponent<Props> = ({ onChange }) => {
                     .split(separator)
                     .map((column) => column.trim())
             )
-            .filter(columns => columns.length !== 1)
+            .filter((columns) => columns.length !== 1)
     }
 
     return (
@@ -33,9 +33,9 @@ export const CsvArea: FunctionComponent<Props> = ({ onChange }) => {
                     flex-flow: column wrap;
                     margin: 1rem 0;
                 }
-  .input {
-  max-width: 700px;
-  }
+                .input {
+                    max-width: 700px;
+                }
             `}</style>
         </div>
     )

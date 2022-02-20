@@ -162,10 +162,10 @@ export const Activities = ({ onChange }: Props) => {
             <CsvArea onChange={(table) => setTable(table)} />
             <Preview error={error} columns={columns} table={table} />
             <style jsx>{`
-              .container {
-              min-width: 400px;
-              flex: 1
-              }
+                .container {
+                    min-width: 400px;
+                    flex: 1;
+                }
             `}</style>
         </div>
     )

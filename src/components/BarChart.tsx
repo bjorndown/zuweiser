@@ -5,7 +5,7 @@ type Props = {
     totalParticipants: number
 }
 export const BarChart: FunctionComponent<Props> = ({
-                                                       fulfilledPriorities,
+    fulfilledPriorities,
     totalParticipants
 }) => {
     return (
@@ -13,8 +13,11 @@ export const BarChart: FunctionComponent<Props> = ({
             <ol>
                 {fulfilledPriorities.map((fulfilledPriority, index) => (
                     <li key={`priority-${index}`}>
-                        Priorität <progress value={fulfilledPriority} max={totalParticipants} />
-                        {' '}
+                        Priorität{' '}
+                        <progress
+                            value={fulfilledPriority}
+                            max={totalParticipants}
+                        />{' '}
                         {fulfilledPriority}
                     </li>
                 ))}
