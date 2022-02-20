@@ -10,14 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          yarn install
+          yarn install --frozen-lockfile
           yarn lint
           yarn test
           yarn build
           yarn export
       - name: Deploy
         uses: docker://peaceiris/gh-pages:v2
-        env:
-          PERSONAL_TOKEN: ${{ secrets.GITHUB_PAT }}
-          PUBLISH_BRANCH: gh-pages
-          PUBLISH_DIR: ./out
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
