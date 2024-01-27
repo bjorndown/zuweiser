@@ -7,6 +7,7 @@ import {
 import { Results } from '../components/Results'
 import { ActivitiesConfig } from '../core/model'
 import { match, MatchResult } from '../core/matcher'
+import { PriorityDistribution } from '../components/PriorityDistribution'
 
 const Index = () => {
     const [activitiesConfig, setActivitiesConfig] = useState<
@@ -44,9 +45,15 @@ const Index = () => {
                 <Participants onChange={setParticipantsConfig} />
             </div>
             {ready && (
-                <button className="matchButton" onClick={compute}>
-                    Prioritäten auflösen
-                </button>
+                <>
+                    <PriorityDistribution
+                        participantsConfig={participantsConfig}
+                        activitiesConfig={activitiesConfig}
+                    />
+                    <button className="matchButton" onClick={compute}>
+                        Prioritäten auflösen
+                    </button>
+                </>
             )}
             {result && (
                 <Results result={result} participantsData={participantsData} />
