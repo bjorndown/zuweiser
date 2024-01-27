@@ -12,7 +12,7 @@ export const Explanation: FunctionComponent<Props> = ({ text }) => (
         <style jsx>
             {`
                 .explanation {
-                    background: var(--green);
+                    background: var(--ok);
                     margin-left: 0.3rem;
                     padding: 0 5px;
                     font-weight: bold;

@@ -1,7 +1,9 @@
 :root {
-    --green: #add396;
+    --ok: #add396;
     --gray: #ddd;
     --light-gray: #eee;
+    --bad: #ff9292;
+    --warn: rgba(255, 139, 6, 0.58);
 }
 
 * {
@@ -29,4 +31,13 @@ table tr:nth-of-type(even) {
 
 textarea {
     font-family: monospace;
+}
+
+
+.bad {
+    background-color: var(--bad);
+}
+
+.ok {
+    background-color: var(--ok);
 }

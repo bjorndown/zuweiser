@@ -4,11 +4,10 @@ import {
     ActivitiesConfig,
     AssignableActivity,
     AssignableParticipant,
-    createAssignableActivity,
-    createAssignableParticipant,
     ParticipantsConfig,
     validateModel
 } from './model'
+import _range from 'lodash/range'
 
 type FillToMinimumConfiguration = {
     readonly priority: number
@@ -30,73 +29,92 @@ export function match(
         participantsConfig.shuffleBeforeMatch
             ? shuffle(participantsConfig.participants)
             : participantsConfig.participants
-    ).map((participant) => createAssignableParticipant(participant))
+    ).map(
+        (participant) =>
+            new AssignableParticipant(participant, participantsConfig)
+    )
     const activitiesToMatch = (
         activitiesConfig.shuffleBeforeMatch
             ? shuffle(activitiesConfig.activities)
             : activitiesConfig.activities
-    ).map((activity) => createAssignableActivity(activity))
+    ).map((activity) => new AssignableActivity(activity, participantsConfig))
 
-    tryToMatch(participantsToMatch, activitiesToMatch)
+    tryToMatch(participantsToMatch, activitiesToMatch, participantsConfig)
 
     return { participants: participantsToMatch, activities: activitiesToMatch }
 }
 
 const tryToMatch = (
     participants: AssignableParticipant[],
-    activities: AssignableActivity[]
+    activities: AssignableActivity[],
+    participantsConfig: ParticipantsConfig
 ): void => {
     const assignableActivities = getAssignableActivities(activities)
-    const totalNumPriorities = participants[0].priorities.length // TODO FIXME
+    const totalNumPriorities = participantsConfig.prioritiesPerPerson
 
     for (const activity of assignableActivities) {
-        const participantsInOrder = getParticipantsInPriorityOrder(
-            participants,
-            activity,
-            totalNumPriorities
-        )
-        console.log(activity.title)
-        const minimalPriority = getMinimalPriorityToFillToMinimum(
-            activity,
-            participantsInOrder,
-            totalNumPriorities
-        )
-        console.log(
-            `Minimal priority to fill to minimum ${
-                minimalPriority.priority + 1
-            }, index ${minimalPriority.index}`
-        )
-        for (const priority of range(totalNumPriorities)) {
+        for (const execution of _range(
+            1,
+            participantsConfig.activitiesPerPerson + 1
+        )) {
+            const participantsInOrder = getParticipantsInPriorityOrder(
+                participants,
+                activity,
+                totalNumPriorities
+            )
+            console.log(activity.title)
+            const minimalPriority = getMinimalPriorityToFillToMinimum(
+                activity,
+                participantsInOrder,
+                totalNumPriorities
+            )
             console.log(
-                `Prio ${priority + 1}: ${participantsInOrder[priority].length}`
+                `Minimal priority to fill to minimum ${
+                    minimalPriority.priority + 1
+                }, index ${minimalPriority.index}`
+            )
+            for (const priority of range(totalNumPriorities)) {
+                console.log(
+                    `Prio ${priority + 1}: ${participantsInOrder[priority].length}`
+                )
+            }
+            tryToFillToMinimum(
+                activity,
+                participantsInOrder,
+                minimalPriority,
+                execution
             )
         }
-        tryToFillToMinimum(activity, participantsInOrder, minimalPriority)
     }
 
     console.log('Second round')
+    for (const execution of _range(
+        1,
+        participantsConfig.activitiesPerPerson + 1
+    )) {
+        for (const activity of sortByDeltaToMinimum(
+            assignableActivities,
+            execution
+        )) {
+            const participantsInOrder = getParticipantsInPriorityOrder(
+                participants,
+                activity,
+                totalNumPriorities
+            )
+            const delta =
+                activity.minimum - activity.participants[execution].length
+            const participantsFlat = participantsInOrder.flat()
 
-    for (const activity of sortByDeltaToMinimum(assignableActivities)) {
-        const participantsInOrder = getParticipantsInPriorityOrder(
-            participants,
-            activity,
-            totalNumPriorities
-        )
-        const delta = activity.minimum - activity.participants.length
-        const participantsFlat = participantsInOrder.flat()
+            console.log(`Try to fill delta ${delta} for ${activity.title}`)
 
-        console.log(`Try to fill delta ${delta} for ${activity.title}`)
-
-        while (
-            participantsFlat.length > 0 &&
-            activity.minimum - activity.participants.length > 0
-        ) {
-            const participant = participantsFlat.shift()
-            if (!participant.assigned && activity.isNotFull()) {
-                activity.assignParticipant(participant)
-                participant.assigned = true
-            } else {
-                console.warn(`${participant.id} already matched!!`)
+            while (
+                participantsFlat.length > 0 &&
+                activity.minimum - activity.participants[execution].length > 0
+            ) {
+                const participant = participantsFlat.shift()
+                if (participant.canBeAssignedTo(activity, execution)) {
+                    activity.assignParticipant(participant, execution)
+                }
             }
         }
     }
@@ -108,20 +126,23 @@ const tryToMatch = (
         participants,
         totalNumPriorities
     )) {
-        console.log(activity.title)
-        const participantsInOrder = getParticipantsInPriorityOrder(
-            participants,
-            activity,
-            totalNumPriorities
-        )
-        for (const priority of range(totalNumPriorities)) {
-            for (const index of range(participantsInOrder[priority].length)) {
-                const participant = participantsInOrder[priority].shift()
-                if (!participant.assigned && activity.isNotFull()) {
-                    activity.assignParticipant(participant)
-                    participant.assigned = true
-                } else {
-                    console.warn(`${participant.id} already matched!!`)
+        for (const execution of _range(
+            1,
+            participantsConfig.activitiesPerPerson + 1
+        )) {
+            const participantsInOrder = getParticipantsInPriorityOrder(
+                participants,
+                activity,
+                totalNumPriorities
+            )
+            for (const priority of range(totalNumPriorities)) {
+                for (const index of range(
+                    participantsInOrder[priority].length
+                )) {
+                    const participant = participantsInOrder[priority].shift()
+                    if (participant.canBeAssignedTo(activity, execution)) {
+                        activity.assignParticipant(participant, execution)
+                    }
                 }
             }
         }
@@ -155,13 +176,15 @@ export const getParticipantsInPriorityOrder = (
 const getUnmatchedParticipants = (
     participants: AssignableParticipant[]
 ): AssignableParticipant[] =>
-    participants.filter((participant) => !participant.assigned)
+    participants.filter((participant) => participant.needsMoreActivities())
 
 const getActivitiesWithMinimumReached = (
-    activities: AssignableActivity[]
+    activities: AssignableActivity[],
+    execution: number
 ): AssignableActivity[] =>
     activities.filter(
-        (activity) => activity.participants.length >= activity.minimum
+        (activity) =>
+            activity.participants[execution].length >= activity.minimum
     )
 
 export const getMinimalPriorityToFillToMinimum = (
@@ -211,37 +234,35 @@ export const getMinimalPriorityToFillToMinimum = (
 export const tryToFillToMinimum = (
     activity: AssignableActivity,
     participantsInOrder: AssignableParticipant[][],
-    minimalPriority: FillToMinimumConfiguration
+    minimalPriority: FillToMinimumConfiguration,
+    execution: number
 ): void => {
     for (const priority of range(minimalPriority.priority)) {
         for (const index of range(participantsInOrder[priority].length)) {
             const participant = participantsInOrder[priority].shift()
-            if (!participant.assigned && activity.isNotFull()) {
-                activity.assignParticipant(participant)
-                participant.assigned = true
-            } else {
-                console.warn(`${participant.id} already matched!!`)
+            if (participant.canBeAssignedTo(activity, execution)) {
+                activity.assignParticipant(participant, execution)
             }
         }
     }
     for (const index of range(minimalPriority.index + 1)) {
         const participant =
             participantsInOrder[minimalPriority.priority].shift()
-        if (!participant.assigned && activity.isNotFull()) {
-            activity.assignParticipant(participant)
-            participant.assigned = true
-        } else {
-            console.warn(`${participant.id} already matched!!`)
+        if (participant.canBeAssignedTo(activity, execution)) {
+            activity.assignParticipant(participant, execution)
         }
     }
 }
 
 export const sortByDeltaToMinimum = (
-    activities: AssignableActivity[]
+    activities: AssignableActivity[],
+    execution: number
 ): AssignableActivity[] => {
     return activities.sort((activity1, activity2) => {
-        const delta1 = activity1.minimum - activity1.participants.length
-        const delta2 = activity2.minimum - activity2.participants.length
+        const delta1 =
+            activity1.minimum - activity1.participants[execution].length
+        const delta2 =
+            activity2.minimum - activity2.participants[execution].length
         return delta2 - delta1
     })
 }

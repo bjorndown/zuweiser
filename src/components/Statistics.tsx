@@ -1,24 +1,32 @@
 import { BarChart } from './BarChart'
 import { MatchResult } from '../core/matcher'
 import { FunctionComponent } from 'react'
+import _range from 'lodash/range'
+import { ParticipantsConfig } from '../core/model'
 
 type Props = {
     result: MatchResult
+    particpantsConfig: ParticipantsConfig
 }
 
-export const Statistics: FunctionComponent<Props> = ({ result }) => {
+export const Statistics: FunctionComponent<Props> = ({
+    result,
+    particpantsConfig
+}) => {
     const getXLabel = (priority: number) => `${priority + 1}. Priorität`
     const computePriorityDistribution = (results: MatchResult): number[] => {
         const distribution: Record<string, number> = {}
         for (const activity of results.activities) {
-            for (const participant of activity.participants) {
-                const fullfilledPriority = participant.priorities.indexOf(
-                    activity.id
-                )
-                if (!distribution[getXLabel(fullfilledPriority)]) {
-                    distribution[getXLabel(fullfilledPriority)] = 1
-                } else {
-                    distribution[getXLabel(fullfilledPriority)]++
+            for (const execution of _range(1)) {
+                for (const participant of activity.allParticipants()) {
+                    const fullfilledPriority = participant.priorities.indexOf(
+                        activity.id
+                    )
+                    if (!distribution[getXLabel(fullfilledPriority)]) {
+                        distribution[getXLabel(fullfilledPriority)] = 1
+                    } else {
+                        distribution[getXLabel(fullfilledPriority)]++
+                    }
                 }
             }
         }
@@ -35,7 +43,12 @@ export const Statistics: FunctionComponent<Props> = ({ result }) => {
                         <thead>
                             <tr>
                                 <th>Kurs</th>
-                                <th>Zugewiesene Teilnehmer</th>
+                                {_range(
+                                    0,
+                                    particpantsConfig.activitiesPerPerson
+                                ).map((execution) => (
+                                    <th>Durchführung {execution + 1}</th>
+                                ))}
                                 <th>Minimum</th>
                                 <th>Limit</th>
                             </tr>
@@ -44,9 +57,18 @@ export const Statistics: FunctionComponent<Props> = ({ result }) => {
                             {result.activities.map((activity) => (
                                 <tr key={`activity-${activity.id}`}>
                                     <td>{activity.title}</td>
-                                    <td className="number">
-                                        {activity.participants.length}
-                                    </td>
+                                    {_range(
+                                        0,
+                                        particpantsConfig.activitiesPerPerson
+                                    ).map((execution) => (
+                                        <td className="number">
+                                            {
+                                                activity.participants[
+                                                    execution + 1
+                                                ]?.length
+                                            }
+                                        </td>
+                                    ))}
                                     <td className="number">
                                         {activity.minimum}
                                     </td>
@@ -55,13 +77,21 @@ export const Statistics: FunctionComponent<Props> = ({ result }) => {
                             ))}
                             <tr className="totals">
                                 <td>Total</td>
-                                <td className="number">
-                                    {
-                                        result.participants.filter(
-                                            (student) => student.assigned
-                                        ).length
-                                    }
-                                </td>
+                                {_range(
+                                    0,
+                                    particpantsConfig.activitiesPerPerson
+                                ).map((execution) => (
+                                    <td className="number">
+                                        {result.activities.reduce(
+                                            (sum, activity) =>
+                                                activity.participantsByExecution(
+                                                    execution + 1
+                                                ).length + sum,
+                                            0
+                                        )}
+                                    </td>
+                                ))}
+
                                 <td className="number">
                                     {result.activities
                                         .map((course) => course.minimum)

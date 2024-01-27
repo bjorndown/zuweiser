@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { FunctionComponent } from 'react'
 import { Column } from './Participants'
+import { Message } from './Message'
 
 type Props = {
     error?: string
@@ -15,7 +16,7 @@ export const Preview: FunctionComponent<Props> = ({
 }) => {
     return (
         <>
-            {error && <span className="error">{error}</span>}
+            {error && <Message type="bad">{error}</Message>}
             {!error && columns.length > 0 && (
                 <div className="preview">
                     <table>
@@ -60,17 +61,13 @@ export const Preview: FunctionComponent<Props> = ({
                     }
 
                     .matched-column {
-                        background: var(--green);
+                        background: var(--ok);
                     }
 
                     th {
                         position: sticky;
                         top: 0;
                         left: 0;
-                    }
-
-                    .error {
-                        background: #cd5c5c;
                     }
                 `}
             </style>

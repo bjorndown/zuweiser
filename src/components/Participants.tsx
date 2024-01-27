@@ -2,19 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { CsvArea } from './CsvArea'
 import { Explanation } from './Explanation'
 import { Preview } from './Preview'
-import { ParticipantsConfig } from '../core/model'
-
-export type ParticipantsConfigWithData = ParticipantsConfig & {
-    participantsData: ParticipantData[]
-}
-
-export type ParticipantData = {
-    id: string
-    data: string[]
-}
+import { AssignableParticipant, ParticipantsConfig } from '../core/model'
 
 type Props = {
-    onChange: (config: ParticipantsConfigWithData) => void
+    onChange: (config: ParticipantsConfig | undefined) => void
 }
 
 type Columns = 'id' | 'priority'
@@ -27,11 +18,13 @@ export type Column<T = string> =
 
 export const Participants = ({ onChange }: Props) => {
     const [shuffleBeforeMatch, setShuffleBeforeMatch] = useState(true)
+    const [activitiesPerPerson, setActivitiesPerPerson] = useState(1)
     const [table, setTable] = useState<string[][] | undefined>()
 
     const isIdColumn = (column: string) => column.toLowerCase() === 'id'
     const isPriorityColumn = (column: string) =>
-        column.toLowerCase().startsWith('prio')
+        column.toLowerCase().includes('prio') ||
+        column.toLowerCase().includes('wahl')
 
     const columnHeads = useMemo(() => table?.[0] ?? [], [table])
     const rows = useMemo(() => table?.slice(1) ?? [], [table])
@@ -49,15 +42,20 @@ export const Participants = ({ onChange }: Props) => {
                 .map((column) => columnHeads.indexOf(column)),
         [columnHeads]
     )
+    const otherAttributesColumns = useMemo(
+        () =>
+            columnHeads.filter(
+                (column) => !isPriorityColumn(column) && !isIdColumn(column)
+            ),
+        [columnHeads]
+    )
 
     const columns = useMemo<ParticipantColumns[]>(() => {
         if (!columnHeads.length) {
             return []
         }
 
-        const priorityColumns = columnHeads.filter((columnHead) =>
-            columnHead.toLowerCase().startsWith('prio')
-        )
+        const priorityColumns = columnHeads.filter(isPriorityColumn)
         return columnHeads.map((column) => {
             if (isIdColumn(column)) {
                 return { label: column, matchedAsLabel: 'ID', matchedAs: 'id' }
@@ -109,17 +107,8 @@ export const Participants = ({ onChange }: Props) => {
             id: row[idColumnIndex],
             priorities: row.filter((_, index) =>
                 priorityColumnIndices.includes(index)
-            )
-        }))
-    }, [error, table, rows, idColumnIndex, priorityColumnIndices])
-
-    const participantsData = useMemo(() => {
-        if (error || !table) {
-            return []
-        }
-        return rows.map((row) => ({
-            id: row[idColumnIndex],
-            data: row.filter(
+            ),
+            otherAttributes: row.filter(
                 (_, index) =>
                     !priorityColumnIndices.concat(idColumnIndex).includes(index)
             )
@@ -128,13 +117,39 @@ export const Participants = ({ onChange }: Props) => {
 
     useEffect(() => {
         if (!error) {
-            onChange({ participants, participantsData, shuffleBeforeMatch })
+            onChange({
+                participants,
+                shuffleBeforeMatch,
+                activitiesPerPerson,
+                prioritiesPerPerson: priorityColumnIndices.length,
+                otherAttributesColumns
+            })
+        } else {
+            onChange(undefined)
         }
-    }, [error, participants, participantsData, shuffleBeforeMatch])
+    }, [
+        error,
+        participants,
+        shuffleBeforeMatch,
+        activitiesPerPerson,
+        priorityColumnIndices,
+        otherAttributesColumns
+    ])
 
     return (
         <div className="container">
             <h2>Teilnehmer</h2>
+            <label htmlFor="activitiesPerPerson">Aktivitäten pro Person</label>
+            <input
+                id="activitiesPerPerson"
+                type="number"
+                value={activitiesPerPerson}
+                onChange={(event) =>
+                    setActivitiesPerPerson(parseInt(event.target.value))
+                }
+                maxLength={1}
+                size={3}
+            />
 
             <input
                 type="checkbox"

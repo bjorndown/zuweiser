@@ -6,7 +6,7 @@ import { Preview } from './Preview'
 import { ActivitiesConfig, Activity } from '../core/model'
 
 type Props = {
-    onChange: (config: ActivitiesConfig) => void
+    onChange: (config: ActivitiesConfig | undefined) => void
 }
 
 type Columns = 'id' | 'title' | 'limit' | 'minimum'
@@ -19,12 +19,12 @@ export const Activities = ({ onChange }: Props) => {
     const isIdColumn = (column: string) => column.toLowerCase() === 'id'
     const isTitleColumn = (column: string) =>
         column.toLowerCase().startsWith('name') ||
-        column.toLowerCase().startsWith('title')
+        column.toLowerCase().startsWith('titel')
     const isLimitColumn = (column: string) =>
-        column.toLowerCase().startsWith('limit') ||
+        column.toLowerCase().includes('limit') ||
         column.toLowerCase().includes('max')
     const isMinimumColumn = (column: string) =>
-        column.toLowerCase().startsWith('minimum')
+        column.toLowerCase().includes('minimum')
 
     const columnHeads = useMemo(() => table?.[0] ?? [], [table])
     const rows = useMemo(() => table?.slice(1) ?? [], [table])
@@ -142,6 +142,8 @@ export const Activities = ({ onChange }: Props) => {
     useEffect(() => {
         if (!error) {
             onChange({ activities, shuffleBeforeMatch })
+        } else {
+            onChange(undefined)
         }
     }, [error, activities, shuffleBeforeMatch])
 

@@ -1,3 +1,3 @@
 module.exports = {
-    basePath: process.env.NODE_ENV === 'production' ? '/zuweiser' : '',
+    basePath: process.env.GITHUB_ACTIONS === 'true' ? '/zuweiser' : '',
 }

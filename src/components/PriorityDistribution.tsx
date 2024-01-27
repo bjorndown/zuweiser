@@ -1,11 +1,10 @@
-import { ActivitiesConfig } from '../core/model'
+import { ActivitiesConfig, ParticipantsConfig } from '../core/model'
 import _range from 'lodash/range'
-import { ParticipantsConfigWithData } from './Participants'
 import { FunctionComponent } from 'react'
 
 type Props = {
     activitiesConfig: ActivitiesConfig
-    participantsConfig: ParticipantsConfigWithData
+    participantsConfig: ParticipantsConfig
 }
 
 export const PriorityDistribution: FunctionComponent<Props> = ({
@@ -33,8 +32,7 @@ export const PriorityDistribution: FunctionComponent<Props> = ({
                         <th>Maximum</th>
                         {_range(
                             1,
-                            participantsConfig.participants[0].priorities
-                                .length + 1
+                            participantsConfig.prioritiesPerPerson + 1
                         ).map((_, index) => (
                             <th key={`prio${index}`}>
                                 Anzahl Prio {index + 1}
@@ -51,8 +49,7 @@ export const PriorityDistribution: FunctionComponent<Props> = ({
                             <td>{activity.limit}</td>
                             {_range(
                                 0,
-                                participantsConfig.participants[0].priorities
-                                    .length
+                                participantsConfig.prioritiesPerPerson
                             ).map((priority, index) => (
                                 <td key={`prio${index}`}>
                                     {count(priority, activity.id)}

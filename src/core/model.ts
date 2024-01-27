@@ -1,3 +1,5 @@
+import _range from 'lodash/range'
+
 export type ActivitiesConfig = {
     readonly activities: Activity[]
     readonly shuffleBeforeMatch: boolean
@@ -6,6 +8,9 @@ export type ActivitiesConfig = {
 export type ParticipantsConfig = {
     readonly participants: Participant[]
     readonly shuffleBeforeMatch: boolean
+    readonly activitiesPerPerson: number
+    readonly prioritiesPerPerson: number
+    readonly otherAttributesColumns: string[]
 }
 
 export type Activity = {
@@ -18,60 +23,183 @@ export type Activity = {
 export type Participant = {
     readonly id: string
     readonly priorities: string[]
+    readonly otherAttributes?: string[]
 }
 
-type ActivityMixin = {
-    readonly participants: Readonly<readonly Participant[]>
-    assignParticipant(participant: AssignableParticipant): void
-    isNotFull(): boolean
-}
+export class AssignableParticipant {
+    public activities: { activity: AssignableActivity; execution: number }[] =
+        []
 
-type ParticipantMixin = {
-    readonly _assigned: boolean
-    assigned: boolean
-}
+    constructor(
+        private participant: Participant,
+        private config: Pick<ParticipantsConfig, 'activitiesPerPerson'>
+    ) {}
 
-export type AssignableActivity = Activity & ActivityMixin
-export type AssignableParticipant = Participant & ParticipantMixin
+    get id() {
+        return this.participant.id
+    }
 
-type EntityTypes = 'Participant' | 'Activity'
+    get priorities() {
+        return this.participant.priorities
+    }
 
-export const createAssignableActivity = (
-    activity: Activity
-): AssignableActivity => {
-    return {
-        ...activity,
-        assignParticipant(participant: AssignableParticipant) {
-            if (this.participants.length < this.limit) {
-                this.participants.push(participant)
-            } else {
-                throw new Error(`Activity title="${this.title} is full`)
-            }
-        },
-        isNotFull() {
-            return this.participants.length < this.limit
-        },
-        participants: []
+    get otherAttributes(): string[] {
+        return this.participant.otherAttributes
+    }
+
+    assign(activity: AssignableActivity, execution: number) {
+        if (!this.needsMoreActivities()) {
+            throw new Error(
+                'Participant has reached limit of activities per person'
+            )
+        }
+        if (this.isAssignedTo(activity, execution)) {
+            throw new Error('Participant is already assigned to this activity')
+        }
+        this.activities.push({ activity, execution })
+    }
+
+    isAssignedTo(activity: Activity, execution: number) {
+        return this.activities.some(
+            (assignedActivity) =>
+                assignedActivity.activity.id === activity.id &&
+                assignedActivity.execution === execution
+        )
+    }
+
+    canBeAssignedTo(activity: AssignableActivity, execution: number): boolean {
+        const anyOtherActivityInSameExecution = this.activities.some(
+            (activity) => activity.execution === execution
+        )
+        const sameActivityInOtherExecution = this.activities.some(
+            (value) => value.activity.id === activity.id
+        )
+        return (
+            this.needsMoreActivities() &&
+            !this.isAssignedTo(activity, execution) &&
+            activity.isNotFull(execution) &&
+            !anyOtherActivityInSameExecution &&
+            !sameActivityInOtherExecution
+        )
+    }
+
+    needsMoreActivities() {
+        return this.activities.length < this.config.activitiesPerPerson
+    }
+
+    otherAssignedActivities(
+        activity: AssignableActivity
+    ): { activity: AssignableActivity; priority: number }[] {
+        return this.activities
+            .filter((value) => value.activity.id !== activity.id)
+            .map(({ activity, execution }) => ({
+                activity,
+                priority: this.priorities.indexOf(activity.id)
+            }))
+    }
+
+    otherPossiblePriorities(
+        activities: AssignableActivity[]
+    ): { activity: AssignableActivity; priority: number; execution: number }[] {
+        return this.priorities
+            .map((priority) =>
+                activities.find((activity) => activity.id === priority)
+            )
+            .map((activity) =>
+                _range(1, this.config.activitiesPerPerson + 1).map(
+                    (execution) => ({
+                        execution,
+                        activity,
+                        canBeAssigned: this.canBeAssignedTo(
+                            activity,
+                            execution
+                        ),
+                        priority: this.priorities.indexOf(activity.id)
+                    })
+                )
+            )
+            .flat()
+            .filter(({ canBeAssigned }) => canBeAssigned)
     }
 }
 
-export const createAssignableParticipant = (
-    participant: Participant
-): AssignableParticipant => {
-    return {
-        ...participant,
-        _assigned: false,
-        set assigned(assigned: boolean) {
-            if (this._assigned && assigned) {
-                throw Error(`Participant ${this.id} already assigned`)
+export class AssignableActivity {
+    public readonly participants: Record<number, AssignableParticipant[]> = {}
+
+    constructor(
+        private activity: Activity,
+        participantsConfig: Pick<ParticipantsConfig, 'activitiesPerPerson'>
+    ) {
+        _range(1, participantsConfig.activitiesPerPerson + 1).forEach(
+            (execution) => (this.participants[execution] = [])
+        )
+    }
+
+    *allParticipants(): Generator<AssignableParticipant> {
+        for (const [_, participants] of Object.entries(this.participants)) {
+            for (const participant of participants) {
+                yield participant
             }
-            this._assigned = assigned
-        },
-        get assigned(): boolean {
-            return this._assigned
         }
     }
+
+    participantsByExecution(execution: number): AssignableParticipant[] {
+        return this.participants[execution] ?? []
+    }
+
+    participantsWithExecution(): {
+        participant: AssignableParticipant
+        execution: string
+    }[] {
+        return Object.entries(this.participants)
+            .map(([execution, participants]) =>
+                participants.map((participant) => ({
+                    participant,
+                    execution
+                }))
+            )
+            .flat(2)
+    }
+
+    get id() {
+        return this.activity.id
+    }
+
+    get minimum() {
+        return this.activity.minimum
+    }
+
+    get limit() {
+        return this.activity.limit
+    }
+
+    get title() {
+        return this.activity.title
+    }
+
+    assignParticipant(participant: AssignableParticipant, execution: number) {
+        if (!this.isNotFull(execution)) {
+            throw new Error(`Activity title="${this.title} is full`)
+        }
+        if (
+            this.participants[execution].some(
+                (existingParticipant) =>
+                    existingParticipant.id === participant.id
+            )
+        ) {
+            throw new Error('Participant already in this activity')
+        }
+
+        this.participants[execution].push(participant)
+        participant.assign(this, execution)
+    }
+
+    isNotFull(execution: number) {
+        return this.participants[execution].length < this.limit
+    }
 }
+
+type EntityTypes = 'Participant' | 'Activity'
 
 export class NotUniqueError extends Error {
     constructor(
