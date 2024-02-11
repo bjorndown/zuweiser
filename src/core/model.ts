@@ -27,6 +27,7 @@ export type Participant = {
 }
 
 export class AssignableParticipant {
+    // TODO maybe store priority here, too. we keep resolving that all over the place..
     public activities: { activity: AssignableActivity; execution: number }[] =
         []
 
@@ -120,6 +121,20 @@ export class AssignableParticipant {
             )
             .flat()
             .filter(({ canBeAssigned }) => canBeAssigned)
+    }
+
+    score(): number {
+        const assignedActivitiesScore = this.activities
+            .map((assignedActivity) =>
+                this.priorities.indexOf(assignedActivity.activity.id) + 1
+            )
+            .reduce((sum, priority) => sum + priority, 0)
+
+        const missingActivitiesScore =
+            (this.config.activitiesPerPerson - this.activities.length) *
+            this.priorities.length
+
+        return assignedActivitiesScore + missingActivitiesScore
     }
 }
 

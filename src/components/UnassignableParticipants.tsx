@@ -53,6 +53,7 @@ export const UnassignableParticipants: FunctionComponent<Props> = ({
                             ).map((index) => (
                                 <th>Kurs {index + 1}</th>
                             ))}
+                            <th>Bewertung</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,7 +64,7 @@ export const UnassignableParticipants: FunctionComponent<Props> = ({
                                     : participant.needsMoreActivities()
                             )
                             .sort((a, b) => {
-                                return a.activities.length - b.activities.length
+                                return b.score() - a.score()
                             })
                             .map((participant, index) => (
                                 <tr
@@ -121,6 +122,7 @@ export const UnassignableParticipants: FunctionComponent<Props> = ({
                                             <td key={index} />
                                         )
                                     })}
+                                    <td>{participant.score()}</td>
                                 </tr>
                             ))}
                     </tbody>

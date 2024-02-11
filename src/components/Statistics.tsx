@@ -3,6 +3,7 @@ import { MatchResult } from '../core/matcher'
 import { FunctionComponent } from 'react'
 import _range from 'lodash/range'
 import { ParticipantsConfig } from '../core/model'
+import {Explanation} from './Explanation'
 
 type Props = {
     result: MatchResult
@@ -117,6 +118,17 @@ export const Statistics: FunctionComponent<Props> = ({
                         )}
                         totalParticipants={result.participants.length}
                     />
+                    <h3>Gesamtbewertung</h3>
+                    <p>
+                        <>
+                        {result.participants.reduce(
+                            (scoreSum, participant) =>
+                                scoreSum + participant.score(),
+                            0
+                        )}
+                            <Explanation text="Je tiefer dieser Wert ist, desto besser. Er ist die Summe der erfüllten Prioritäten pro Teilnehmer:in. Beispiel: Wird jemand seiner 1. und 5. Priorität zugewiesen, dann ist ihre Bewertung 1 + 5 = 6. Eine fehlende Zuweisung wird mit der Anzahl Prioritäten gewertet."/>
+                        </>
+                    </p>
                 </section>
             </article>
             <style jsx>{`
