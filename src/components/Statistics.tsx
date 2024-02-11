@@ -13,20 +13,17 @@ export const Statistics: FunctionComponent<Props> = ({
     result,
     particpantsConfig
 }) => {
-    const getXLabel = (priority: number) => `${priority + 1}. Priorität`
     const computePriorityDistribution = (results: MatchResult): number[] => {
         const distribution: Record<string, number> = {}
         for (const activity of results.activities) {
-            for (const execution of _range(1)) {
-                for (const participant of activity.allParticipants()) {
-                    const fullfilledPriority = participant.priorities.indexOf(
-                        activity.id
-                    )
-                    if (!distribution[getXLabel(fullfilledPriority)]) {
-                        distribution[getXLabel(fullfilledPriority)] = 1
-                    } else {
-                        distribution[getXLabel(fullfilledPriority)]++
-                    }
+            for (const participant of activity.allParticipants()) {
+                const fulfilledPriority = participant.priorities.indexOf(
+                    activity.id
+                )
+                if (!distribution[fulfilledPriority]) {
+                    distribution[fulfilledPriority] = 1
+                } else {
+                    distribution[fulfilledPriority]++
                 }
             }
         }
